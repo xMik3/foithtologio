@@ -1,7 +1,6 @@
 
-package com.mycompany.foit;
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public class Template extends JFrame {
         
@@ -19,7 +18,8 @@ public class Template extends JFrame {
        
 
         
-        public Template(String title){
+        public Template(String title)
+        {
             
             super(title);
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -30,9 +30,18 @@ public class Template extends JFrame {
             gridp = new JPanel();
             gridp.setLayout(new GridBagLayout());
             
-            title0 = new JLabel("titos1");
-            title1 = new JLabel("*titlos");
-            title2 = new JLabel("hahaha titos");
+            title0 = new JLabel("Panel1");
+            title1 = new JLabel("Panel2");
+            title2 = new JLabel("Panel3");
+            
+            title0.setFont(new Font("Consolas", Font.BOLD, 20));
+            title0.setHorizontalAlignment(SwingConstants.CENTER);
+
+            title1.setFont(new Font("Consolas", Font.BOLD, 20));
+            title1.setHorizontalAlignment(SwingConstants.CENTER);
+
+            title2.setFont(new Font("Consolas", Font.BOLD, 20));
+            title2.setHorizontalAlignment(SwingConstants.CENTER);
             
             ex1 = new JPanel();
             ex2 = new JPanel();
@@ -40,12 +49,63 @@ public class Template extends JFrame {
             ex4 = new JPanel();
             ex5 = new JPanel();
             ex6 = new JPanel();
-            ex1.setBackground(Color.RED);
-            ex2.setBackground(Color.BLUE);
-            ex3.setBackground(Color.GREEN);
             ex4.setBackground(Color.GRAY);
-            ex5.setBackground(Color.WHITE);
-            ex6.setBackground(Color.PINK);
+            ex5.setBackground(Color.GRAY);
+            ex6.setBackground(Color.GRAY);
+
+            ex4.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            ex4.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+
+            ex5.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            ex5.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+
+            ex6.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            ex6.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+            
+            ex1 = createRoundedPanel(Color.WHITE, 20, new test1(10, new Color(90, 90, 90)));
+
+            // Create scrollable list panel
+            JPanel listPanel = new JPanel();
+            listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
+            listPanel.setOpaque(false); // For transparency if desired
+
+            // Add many labels to force scrollbars
+            for (int i = 1; i <= 30; i++) {
+                JButton button = new JButton("• Item " + i);
+                button.setFont(new Font("Consolas", Font.PLAIN, 16));
+                button.setForeground(Color.BLACK); // Use white if dark background
+                button.setAlignmentX(Component.LEFT_ALIGNMENT);
+                
+                
+                button.addActionListener
+                (
+                    l -> 
+                    {
+                        System.out.println("Clicked: " + button.getText());
+                    }
+                );
+                
+                
+                listPanel.add(button);
+            }
+
+            // Put listPanel inside a scroll pane
+            JScrollPane scrollPane = new JScrollPane(listPanel);
+            scrollPane.setOpaque(false);
+            scrollPane.getViewport().setOpaque(false);
+            scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+            scrollPane.setPreferredSize(new Dimension(200, 400)); // Force visible area
+
+            // Add to ex1
+            ex1.add(scrollPane, BorderLayout.CENTER);
+
+
+
+
+            ex2 = createRoundedPanel(Color.WHITE, 20, new test1(10, new Color(90, 90, 90)));
+            ex3 = createRoundedPanel(Color.WHITE, 20, new test1(10, new Color(90, 90, 90)));
+
             
             //adjusting each subgrid 
             GridBagConstraints huh = new GridBagConstraints();
@@ -85,15 +145,50 @@ public class Template extends JFrame {
             
             add(gridp);
             
-            setSize(800,600);
+            setExtendedState(JFrame.MAXIMIZED_BOTH);
+            setUndecorated(true); // Optional: remove window borders
             setVisible(true);
             gridp.setVisible(true);
+
+
             
-            
-}
+        }
     public static void main(String[] args) {
         new Template("bruh");
         
     }
+
+    private JPanel createRoundedPanel(Color bgColor, int arc, test1 border) 
+    {
+        JPanel panel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(getBackground());
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), arc, arc);
+                g2.dispose();
+
+                super.paintComponent(g); // Paint child components on top!
+
+            }
+
+            @Override
+            public boolean isOpaque() {
+                return false;
+            }
+        };
+
+        panel.setOpaque(false);
+        panel.setBackground(bgColor);
+        if (border != null) {
+            panel.setBorder(border);
+        }
+        return panel;
+    }
+
+
 }
+
+
 //autaaaaaa
