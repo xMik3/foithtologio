@@ -1,14 +1,14 @@
 package controllers;
 
 import api.LoginInterface;
-import api.StudentInterface;
+import api.SecretaryInterface;
 import client.ApiClient;
 import client.TokenManager;
 
+import models.general.Course;
 import models.login.request.LoginRequest;
 import models.login.response.LoginResponse;
-import models.students.RegisteredCourse;
-import models.students.response.GetRegisteredCoursesResponse;
+import models.secretary.response.GetCoursesResponse;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -16,12 +16,12 @@ import retrofit2.Response;
 
 import java.util.List;
 
-public class Controller {
+public class TestController {
 
     public static void main(String[] args) {
 
         LoginInterface loginInterface = ApiClient.getClient("http://localhost:3000").create(LoginInterface.class);
-        LoginRequest request = new LoginRequest("000001", "hello", "student");
+        LoginRequest request = new LoginRequest("000000", "kimas", "secretary");
 
         Call<LoginResponse> call = loginInterface.login(request);
         call.enqueue(new Callback<LoginResponse>() {
@@ -30,39 +30,36 @@ public class Controller {
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
 
                 if (response.isSuccessful()) {
-                    TokenManager.setToken(response.body().getToken());
+                    TokenManager.setToken("Bearer " + response.body().getToken());
                 } else {
-                    System.out.println("not successful");
+                    System.out.println(response.body().getMessage());
                     return;
                 }
 
-                StudentInterface studentInterface = ApiClient.getClient("http://localhost:3000").create(StudentInterface.class);
-                String tokenRequest = "Bearer " + TokenManager.getToken();
+                SecretaryInterface secretaryInterface = ApiClient.getClient("http://localhost:3000").create(SecretaryInterface.class);
 
-                Call<GetRegisteredCoursesResponse> call2 = studentInterface.getRegisteredCourses(tokenRequest);
-                call2.enqueue(new Callback<GetRegisteredCoursesResponse>() {
+                Call<GetCoursesResponse> call2 = secretaryInterface.getCourses(TokenManager.getToken());
+                call2.enqueue(new Callback<GetCoursesResponse>() {
 
                     @Override
-                    public void onResponse(Call<GetRegisteredCoursesResponse> call, Response<GetRegisteredCoursesResponse> response) {
+                    public void onResponse(Call<GetCoursesResponse> call, Response<GetCoursesResponse> response) {
 
                         if(response.isSuccessful()){
-                            List<RegisteredCourse> courses = response.body().getRegisteredCourses();
+                            List<Course> courses = response.body().getCourses();
 
-                            System.out.println(response.body().getMessage());
-
-                            for (RegisteredCourse course : courses) {
-                                System.out.println(course.getCNAME());
+                            for (Course course : courses) {
+                                System.out.println(course.getNAME());
                             }
                         }
                         else{
-                            System.out.println("not successful");
+                            System.out.println(response.body().getMessage());
                             return;
                         }
 
                     }
 
                     @Override
-                    public void onFailure(Call<GetRegisteredCoursesResponse> call, Throwable t) {
+                    public void onFailure(Call<GetCoursesResponse> call, Throwable t) {
                         System.out.println(t.getMessage());
                     }
 
