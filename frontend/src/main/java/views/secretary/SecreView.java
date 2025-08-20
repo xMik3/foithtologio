@@ -17,7 +17,7 @@ public class SecreView extends JFrame {
         private JPanel ex5;
         private JPanel ex6;
         private JTextArea description;
-       
+        private JButton lastSelectedButton;
 
         
         public SecreView(String title)
@@ -65,6 +65,7 @@ public class SecreView extends JFrame {
             ex6.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
             
             ex1 = createRoundedPanel(Color.WHITE, 20, new test1(10, new Color(90, 90, 90)));
+            ex1.setLayout(new BorderLayout()); 
 
             // Create scrollable list panel
             JPanel listPanel = new JPanel();
@@ -76,7 +77,7 @@ public class SecreView extends JFrame {
                 JButton button = new JButton("• Student ID" + (22390000 + i));
                 button.setFont(new Font("Consolas", Font.PLAIN, 24));
                 button.setForeground(Color.BLACK); // Use white if dark background
-                button.setAlignmentX(Component.LEFT_ALIGNMENT);
+                button.setAlignmentX(Component.CENTER_ALIGNMENT);
                 //button.setPreferredSize(new Dimension(300, 600));
                 
                 
@@ -85,6 +86,7 @@ public class SecreView extends JFrame {
                     l -> 
                     {
                         description.append(button.getText() + "\n");
+                        lastSelectedButton = button;
                     }
                 );
                 
@@ -107,6 +109,7 @@ public class SecreView extends JFrame {
 
 
             ex2 = createRoundedPanel(Color.WHITE, 20, new test1(10, new Color(90, 90, 90)));
+            ex2.setLayout(new BorderLayout());
 
             // Create scrollable list panel
             JPanel listPanel2 = new JPanel();
@@ -118,7 +121,7 @@ public class SecreView extends JFrame {
                 JButton button = new JButton("• Course ID " + (6000 + i));
                 button.setFont(new Font("Consolas", Font.PLAIN, 24));
                 button.setForeground(Color.BLACK); // Use white if dark background
-                button.setAlignmentX(Component.LEFT_ALIGNMENT);
+                button.setAlignmentX(Component.CENTER_ALIGNMENT);
                 
                 final int num;
                 num = i;
@@ -127,6 +130,7 @@ public class SecreView extends JFrame {
                     l -> 
                     {
                         description.append(button.getText() + "\n");
+                        lastSelectedButton = button;
                     }
                 );
                 
@@ -146,6 +150,7 @@ public class SecreView extends JFrame {
             ex2.add(scrollPane2, BorderLayout.CENTER);
 
             ex3 = createRoundedPanel(Color.WHITE, 20, new test1(10, new Color(90, 90, 90)));
+            ex3.setLayout(new BorderLayout());
 
             description = new JTextArea(45, 55);
             description.setFont(new Font("Consolas", Font.PLAIN,  16));
@@ -154,6 +159,125 @@ public class SecreView extends JFrame {
             JScrollPane textScroll = new JScrollPane(description);
             ex3.add(textScroll, BorderLayout.CENTER); 
             
+
+            JPanel controlPanel = new JPanel();
+            controlPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
+
+            JButton addBtn = new JButton("➕ Add");
+            JButton deleteBtn = new JButton("🗑 Delete");
+            JButton editBtn = new JButton("✏ Edit");
+
+            // Add action for Add
+            addBtn.addActionListener(e -> {
+                String name = JOptionPane.showInputDialog(this, "Enter new button text:");
+                if (name != null && !name.trim().isEmpty()) {
+                    JButton newButton = new JButton(name);
+                    newButton.setFont(new Font("Consolas", Font.PLAIN, 24));
+                    newButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+                    // add same listener logic
+                    newButton.addActionListener(l -> {
+                        description.append(newButton.getText() + "\n");
+                        lastSelectedButton = newButton;
+                    });
+
+                    // For demo, add to listPanel (students). You could also choose ex2 list
+                    ((JPanel)((JViewport)((JScrollPane)ex1.getComponent(0)).getComponent(0)).getView()).add(newButton);
+                    ex1.revalidate();
+                    ex1.repaint();
+                }
+            });
+
+            // Delete last selected
+            deleteBtn.addActionListener(e -> {
+                if (lastSelectedButton != null) {
+                    Container parent = lastSelectedButton.getParent();
+                    parent.remove(lastSelectedButton);
+                    parent.revalidate();
+                    parent.repaint();
+                    lastSelectedButton = null;
+                } else {
+                    JOptionPane.showMessageDialog(this, "No button selected!");
+                }
+            });
+
+            // Edit last selected
+            editBtn.addActionListener(e -> {
+                if (lastSelectedButton != null) {
+                    String newName = JOptionPane.showInputDialog(this, "Edit button text:", lastSelectedButton.getText());
+                    if (newName != null && !newName.trim().isEmpty()) {
+                        lastSelectedButton.setText(newName);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "No button selected!");
+                }
+            });
+
+            controlPanel.add(addBtn);
+            controlPanel.add(deleteBtn);
+            controlPanel.add(editBtn);
+
+            ex1.add(controlPanel, BorderLayout.SOUTH);
+
+            JPanel controlPanel2 = new JPanel();
+            controlPanel2.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
+
+            JButton addBtn2 = new JButton("➕ Add");
+            JButton deleteBtn2 = new JButton("🗑 Delete");
+            JButton editBtn2 = new JButton("✏ Edit");
+
+            // Add action for Add
+            addBtn2.addActionListener(e -> {
+                String name = JOptionPane.showInputDialog(this, "Enter new button text:");
+                if (name != null && !name.trim().isEmpty()) {
+                    JButton newButton = new JButton(name);
+                    newButton.setFont(new Font("Consolas", Font.PLAIN, 24));
+                    newButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+                    // add same listener logic
+                    newButton.addActionListener(l -> {
+                        description.append(newButton.getText() + "\n");
+                        lastSelectedButton = newButton;
+                    });
+
+                    // For demo, add to listPanel (students). You could also choose ex2 list
+                    ((JPanel)((JViewport)((JScrollPane)ex2.getComponent(0)).getComponent(0)).getView()).add(newButton);
+                    ex2.revalidate();
+                    ex2.repaint();
+                }
+            });
+
+            // Delete last selected
+            deleteBtn2.addActionListener(e -> {
+                if (lastSelectedButton != null) {
+                    Container parent = lastSelectedButton.getParent();
+                    parent.remove(lastSelectedButton);
+                    parent.revalidate();
+                    parent.repaint();
+                    lastSelectedButton = null;
+                } else {
+                    JOptionPane.showMessageDialog(this, "No button selected!");
+                }
+            });
+
+            // Edit last selected
+            editBtn2.addActionListener(e -> {
+                if (lastSelectedButton != null) {
+                    String newName = JOptionPane.showInputDialog(this, "Edit button text:", lastSelectedButton.getText());
+                    if (newName != null && !newName.trim().isEmpty()) {
+                        lastSelectedButton.setText(newName);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "No button selected!");
+                }
+            });
+
+            controlPanel2.add(addBtn2);
+            controlPanel2.add(deleteBtn2);
+            controlPanel2.add(editBtn2);
+
+            ex2.add(controlPanel2, BorderLayout.SOUTH);
+
             //adjusting each subgrid 
             GridBagConstraints huh = new GridBagConstraints();
             huh.fill = GridBagConstraints.BOTH;
