@@ -1,3 +1,4 @@
+package views.secretary;
 
 import java.awt.*;
 import javax.swing.*;
@@ -24,6 +25,14 @@ public class SecreView extends JFrame {
         {
             
             super(title);
+
+            try {
+                UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarkLaf");
+                UIManager.put( "Button.arc", 999 );
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             
             setLayout(new BorderLayout());
@@ -63,8 +72,8 @@ public class SecreView extends JFrame {
 
             ex6.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             ex6.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
-            
-            ex1 = createRoundedPanel(Color.WHITE, 20, new test1(10, new Color(90, 90, 90)));
+
+
             ex1.setLayout(new BorderLayout()); 
 
             // Create scrollable list panel
@@ -108,7 +117,7 @@ public class SecreView extends JFrame {
 
 
 
-            ex2 = createRoundedPanel(Color.WHITE, 20, new test1(10, new Color(90, 90, 90)));
+
             ex2.setLayout(new BorderLayout());
 
             // Create scrollable list panel
@@ -149,7 +158,7 @@ public class SecreView extends JFrame {
             // Add to ex1
             ex2.add(scrollPane2, BorderLayout.CENTER);
 
-            ex3 = createRoundedPanel(Color.WHITE, 20, new test1(10, new Color(90, 90, 90)));
+
             ex3.setLayout(new BorderLayout());
 
             description = new JTextArea(45, 55);
@@ -329,34 +338,6 @@ public class SecreView extends JFrame {
         
     }
 
-    private JPanel createRoundedPanel(Color bgColor, int arc, test1 border) 
-    {
-        JPanel panel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(getBackground());
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), arc, arc);
-                g2.dispose();
-
-                super.paintComponent(g); // Paint child components on top!
-
-            }
-
-            @Override
-            public boolean isOpaque() {
-                return false;
-            }
-        };
-
-        panel.setOpaque(false);
-        panel.setBackground(bgColor);
-        if (border != null) {
-            panel.setBorder(border);
-        }
-        return panel;
-    }
 
 }
 
