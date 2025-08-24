@@ -6,13 +6,23 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
 
-    private static Retrofit retrofit;
+    private static Retrofit client;
+    private static String token;
 
-    public static Retrofit getClient(String URL){
-        if(retrofit == null){
-            retrofit = new Retrofit.Builder().baseUrl(URL).addConverterFactory(GsonConverterFactory.create()).build();
+    public static void setToken(String token) {
+        ApiClient.token = token;
+    }
+
+    public static String getToken() {
+        return token;
+    }
+
+    public static Retrofit getClient(){
+        if(client == null){
+            ApiClient.client = new Retrofit.Builder().baseUrl("http://localhost:3000").addConverterFactory(GsonConverterFactory.create()).build();
         }
-        return retrofit;
+
+        return client;
     }
 
 }

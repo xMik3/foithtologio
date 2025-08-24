@@ -2,19 +2,35 @@ package views.general;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.util.Objects;
+
+import api.LoginInterface;
+import models.login.request.LoginRequest;
+import models.login.response.LoginResponse;
+import models.general.ApiResponse;
+import client.ApiClient;
+
 import org.jdesktop.swingx.prompt.PromptSupport;
+import com.google.gson.Gson;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class Login extends JFrame{
 
-    private JLabel icon;
-    private JTextField usernameField;
-    private JPasswordField passwordField;
-    private JTextField organizationURLField;
-    private JButton loginButton;
+    private final JTextField usernameField;
+    private final JPasswordField passwordField;
+    private final JComboBox typeSelection;
+    private final JLabel errorLabel;
+    private final JButton loginButton;
 
     public Login(String title){
         super(title);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        LoginInterface loginInterface = ApiClient.getClient().create(LoginInterface.class);
+        Gson gson = new Gson();
 
         try {
             UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarkLaf");
@@ -24,19 +40,18 @@ public class Login extends JFrame{
             e.printStackTrace();
         }
 
-
-        icon = new JLabel(new ImageIcon(getClass().getResource("/images/temporaryIcon.png")));
-        organizationURLField = new JTextField();
-        organizationURLField.setFont(new Font("Arial", Font.PLAIN, 25));
-        PromptSupport.setPrompt("Enter Organization URL", organizationURLField);
+        JLabel icon = new JLabel(new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/temporaryIcon.png"))));
+        String[] options = {"Student","Teacher","Secretary"};
+        typeSelection = new JComboBox(options);
+        typeSelection.setFont(new Font("Arial", Font.PLAIN, 25));
 
         JPanel leftUpPanel = new JPanel(new BorderLayout());
         leftUpPanel.add(icon,BorderLayout.CENTER);
         leftUpPanel.setBorder(BorderFactory.createEmptyBorder(40, 0, 0, 0));
 
         JPanel leftDownPanel = new JPanel(new BorderLayout());
-        leftDownPanel.add(organizationURLField,BorderLayout.CENTER);
-        leftDownPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 200, 0));
+        leftDownPanel.add(typeSelection,BorderLayout.CENTER);
+        leftDownPanel.setBorder(BorderFactory.createEmptyBorder(30, 140, 210, 140));
 
         JPanel leftPanel = new JPanel(new BorderLayout());
         leftPanel.setLayout(new GridLayout(2,1,0,25));
@@ -51,23 +66,74 @@ public class Login extends JFrame{
         passwordField.setFont(new Font("Arial", Font.PLAIN, 25));
         PromptSupport.setPrompt("Enter Password", passwordField);
 
-        loginButton = new JButton();
-        loginButton.setFont(new Font("Arial", Font.PLAIN, 22));
+        loginButton = new JButton("Login");
+        loginButton.setFont(new Font("Arial", Font.PLAIN, 25));
         loginButton.setText("Login");
 
-        JPanel rightUpPanel = new JPanel(new BorderLayout());
-        rightUpPanel.setLayout(new GridLayout(2,1,0,25));
-        rightUpPanel.add(usernameField, BorderLayout.NORTH);
-        rightUpPanel.add(passwordField, BorderLayout.SOUTH);
-        rightUpPanel.setBorder(BorderFactory.createEmptyBorder(100, 0, 55, 0));
+        loginButton.addActionListener(e -> {
+
+            String userType = typeSelection.getSelectedItem().toString();
+
+            String userID = usernameField.getText();
+            if(validateUserID(userID)){
+                return;
+            }
+
+            String userPWD = new String(passwordField.getPassword());
+            if(validateUserPWD(userPWD)){
+                return;
+            }
+
+            LoginRequest loginRequest = new LoginRequest(userID, userPWD, userType);
+            Call<LoginResponse> call = loginInterface.login(loginRequest);
+            call.enqueue(new Callback<LoginResponse>() {
+
+                @Override
+                public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+
+                    if (response.isSuccessful()) {
+                        LoginResponse loginResponse = response.body();
+                        ApiClient.setToken("Bearer " + loginResponse.getToken());
+
+                        //Open Next Window Depending On User
+
+                    } else {
+                        errorLabel.setBounds(500,550,600,50);
+                        try {
+                            ApiResponse loginResponse = gson.fromJson(response.errorBody().string(), ApiResponse.class);
+                            errorLabel.setText("*"+ loginResponse.getMessage());
+                        } catch (IOException ex) {
+                            errorLabel.setText("*"+ex.getMessage());
+                        }
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Call<LoginResponse> call, Throwable t) {
+                    errorLabel.setText("*Something went wrong. Please try again.");
+                }
+
+            });
+        });
+
+        errorLabel = new JLabel("");
+        errorLabel.setFont(new Font("Arial", Font.PLAIN, 25));
+        errorLabel.setForeground(Color.red);
+
+        JPanel rightMiddlePanel = new JPanel(new BorderLayout());
+        rightMiddlePanel.setLayout(new GridLayout(2,1,0,25));
+        rightMiddlePanel.add(usernameField, BorderLayout.CENTER);
+        rightMiddlePanel.add(passwordField, BorderLayout.SOUTH);
+        rightMiddlePanel.setBorder(BorderFactory.createEmptyBorder(100, 0, 55, 0));
 
         JPanel rightDownPanel = new JPanel(new BorderLayout());
-        rightDownPanel.add(loginButton);
+        rightDownPanel.add(loginButton,BorderLayout.NORTH);
         rightDownPanel.setBorder(BorderFactory.createEmptyBorder(0, 140, 230, 140));
 
         JPanel rightPanel = new JPanel(new  BorderLayout());
         rightPanel.setLayout(new GridLayout(2,1,0,0));
-        rightPanel.add(rightUpPanel, BorderLayout.CENTER);
+        rightPanel.add(rightMiddlePanel, BorderLayout.CENTER);
         rightPanel.add(rightDownPanel, BorderLayout.SOUTH);
 
         JPanel panel = new JPanel(new BorderLayout());
@@ -75,15 +141,52 @@ public class Login extends JFrame{
         panel.setLayout(new GridLayout(1,2,100,0));
         panel.add(leftPanel, BorderLayout.WEST);
         panel.add(rightPanel,BorderLayout.EAST);
+        panel.setBounds(0,0,1200,700);
 
-        add(panel);
+        JLayeredPane layeredPane = new JLayeredPane();
+        layeredPane.setPreferredSize(new Dimension(1200,700));
+        layeredPane.add(panel,JLayeredPane.DEFAULT_LAYER);
+        layeredPane.add(errorLabel,JLayeredPane.PALETTE_LAYER);
+
+        add(layeredPane);
+
         setSize(1200, 700);
         setLocationRelativeTo(null);
         setResizable(false);
         setVisible(true);
 
     }
-        
+
+    private boolean validateUserID(String userID){
+        if(userID.length()!=6){
+            errorLabel.setBounds(400,550,600,50);
+            errorLabel.setText("*User ID Must Be 6 Characters Long.");
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean validateUserPWD(String userPWD){
+
+        if(userPWD.length()<4){
+            errorLabel.setBounds(350,550,600,50);
+            errorLabel.setText("*Password Must Be Longer Than 4 Characters.");
+            return true;
+        }
+        else if(userPWD.length()>20){
+            errorLabel.setBounds(350,550,600,50);
+            errorLabel.setText("*Password Must Be Shorter Than 20 Characters.");
+            return true;
+        }
+        else{
+            errorLabel.setText("");
+            return false;
+        }
+
+    }
+
+
     public static void main(String[] args) {
         new Login("Login");
 

@@ -1,6 +1,6 @@
 package api;
 
-import models.general.Response;
+import models.general.ApiResponse;
 import models.students.response.GetRegisteredCoursesResponse;
 
 import retrofit2.Call;
@@ -13,9 +13,9 @@ public interface StudentInterface {
     Call<GetRegisteredCoursesResponse> getRegisteredCourses(@Header("Authorization") String token);
 
     @PATCH("/registeredCourses/{courseID}")
-    Call<Response> registerCourse(@Path("courseID") String courseID, @Header("Authorization") String token);
+    Call<ApiResponse> registerCourse(@Path("courseID") String courseID, @Header("Authorization") String token);
 
     @DELETE("registeredCourses/{courseID")
-    Call<Response> deleteCourse(@Path("courseID") String courseID, @Header("Authorization") String token);
+    Call<ApiResponse> deleteCourse(@Path("courseID") String courseID, @Header("Authorization") String token);
 
 }

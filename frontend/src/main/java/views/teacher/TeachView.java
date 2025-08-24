@@ -24,7 +24,6 @@ public class TeachView extends JFrame {
 
             try {
                 UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarkLaf");
-                UIManager.put( "Button.arc", 999 );
             } catch (Exception e) {
                 e.printStackTrace();
             }

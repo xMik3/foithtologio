@@ -1,6 +1,6 @@
 package models.general;
 
-public class Response {
+public class ApiResponse {
 
     private String status;
     private String message;

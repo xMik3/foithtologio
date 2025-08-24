@@ -1,8 +1,8 @@
 package models.login.response;
 
-import models.general.Response;
+import models.general.ApiResponse;
 
-public class LoginResponse extends Response {
+public class LoginResponse extends ApiResponse {
 
     private String token;
 

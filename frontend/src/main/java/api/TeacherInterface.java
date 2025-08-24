@@ -1,6 +1,6 @@
 package api;
 
-import models.general.Response;
+import models.general.ApiResponse;
 import models.teacher.request.GradeRequest;
 import models.teacher.response.GetManagedCoursesResponse;
 import models.teacher.response.GetManagedStudentsResponse;
@@ -17,6 +17,6 @@ public interface TeacherInterface {
     Call<GetManagedStudentsResponse> getManagedStudents(@Header("Authorization") String token, @Path("courseID") String courseID);
 
     @PATCH("/managedCourses/{courseID}/students/{studentID}")
-    Call<Response> gradeStudent(@Header("Authorization") String token, @Path("courseID") String courseID, @Path("studentID") String studentID, @Body GradeRequest request);
+    Call<ApiResponse> gradeStudent(@Header("Authorization") String token, @Path("courseID") String courseID, @Path("studentID") String studentID, @Body GradeRequest request);
 
 }

@@ -3,7 +3,6 @@ package controllers;
 import api.LoginInterface;
 import api.SecretaryInterface;
 import client.ApiClient;
-import client.TokenManager;
 
 import models.general.Course;
 import models.login.request.LoginRequest;
@@ -20,7 +19,7 @@ public class TestController {
 
     public static void main(String[] args) {
 
-        LoginInterface loginInterface = ApiClient.getClient("http://localhost:3000").create(LoginInterface.class);
+        LoginInterface loginInterface = ApiClient.getClient().create(LoginInterface.class);
         LoginRequest request = new LoginRequest("000000", "kimas", "secretary");
 
         Call<LoginResponse> call = loginInterface.login(request);
@@ -30,15 +29,15 @@ public class TestController {
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
 
                 if (response.isSuccessful()) {
-                    TokenManager.setToken("Bearer " + response.body().getToken());
+                    ApiClient.setToken("Bearer " + response.body().getToken());
                 } else {
                     System.out.println(response.body().getMessage());
                     return;
                 }
 
-                SecretaryInterface secretaryInterface = ApiClient.getClient("http://localhost:3000").create(SecretaryInterface.class);
+                SecretaryInterface secretaryInterface = ApiClient.getClient().create(SecretaryInterface.class);
 
-                Call<GetCoursesResponse> call2 = secretaryInterface.getCourses(TokenManager.getToken());
+                Call<GetCoursesResponse> call2 = secretaryInterface.getCourses(ApiClient.getToken());
                 call2.enqueue(new Callback<GetCoursesResponse>() {
 
                     @Override

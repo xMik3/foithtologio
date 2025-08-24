@@ -1,10 +1,10 @@
 package models.teacher.response;
 
-import models.general.Response;
+import models.general.ApiResponse;
 import models.teacher.ManagedStudent;
 import java.util.List;
 
-public class GetManagedStudentsResponse extends Response {
+public class GetManagedStudentsResponse extends ApiResponse {
 
     private List<ManagedStudent> students;
 
