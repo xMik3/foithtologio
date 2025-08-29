@@ -1,7 +1,21 @@
-
 package views.student;
-import java.awt.*;
+
 import javax.swing.*;
+import java.awt.*;
+import java.io.IOException;
+import java.util.Objects;
+
+import api.LoginInterface;
+import models.login.request.LoginRequest;
+import models.login.response.LoginResponse;
+import models.general.ApiResponse;
+import client.ApiClient;
+
+import org.jdesktop.swingx.prompt.PromptSupport;
+import com.google.gson.Gson;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 public class StudView extends JFrame{
     
     JPanel titlepanel1;
@@ -22,6 +36,9 @@ public class StudView extends JFrame{
         super(title);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
+        
+        Gson gson = new Gson();
+        
          try {
             UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarkLaf");
             UIManager.put("TextComponent.arc", 25);
@@ -40,10 +57,10 @@ public class StudView extends JFrame{
         bodypanel2.setLayout(new BorderLayout());
         
         btnpanel1 = new JPanel();
-        btnpanel1.setLayout(new BorderLayout());
+        btnpanel1.setLayout(new FlowLayout());
         
         btnpanel2 = new JPanel();
-        btnpanel2.setLayout(new BorderLayout());
+        btnpanel2.setLayout(new FlowLayout());
         
         title1 = new JLabel("Courses:");
         title1.setFont(new Font("Arial", Font.PLAIN, 25));
@@ -128,7 +145,7 @@ public class StudView extends JFrame{
             
             panel.setVisible(true);
             setVisible(true);
-            setSize(800,600);
+            setSize(1200,700);
             add(panel);
             
 }
