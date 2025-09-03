@@ -1,7 +1,25 @@
 package views.teacher;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 
 public class TeachView extends JFrame {
         
@@ -47,7 +65,7 @@ public class TeachView extends JFrame {
             title2.setFont(new Font("Consolas", Font.BOLD, 20));
             title2.setHorizontalAlignment(SwingConstants.CENTER);
             
-            ex1 = new JPanel();
+            ex1 = new JPanel(new BorderLayout());
             ex2 = new JPanel();
             ex3 = new JPanel();
             ex4 = new JPanel();
@@ -115,11 +133,28 @@ public class TeachView extends JFrame {
 
             description = new JTextArea(45, 55);
             description.setFont(new Font("Consolas", Font.PLAIN, 16));
-            description.setText("This is a large block of text...\nYou can scroll down...");
-            description.setEditable(true);
+            description.setText("");
+            description.setEditable(false);
             JScrollPane textScroll = new JScrollPane(description);
             ex3.add(textScroll, BorderLayout.CENTER); 
             
+
+            JPanel controlPanel = new JPanel();
+            controlPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
+
+            JButton gradeBtn = new JButton("Grade");
+
+            // Add action for Add
+            gradeBtn.addActionListener(e -> {
+                String grade = JOptionPane.showInputDialog(this, "Enter new grade text:");
+                
+                
+            });
+
+            controlPanel.add(gradeBtn);
+            ex1.add(controlPanel, BorderLayout.SOUTH);
+
+
             GridBagConstraints huh = new GridBagConstraints();
             huh.fill = GridBagConstraints.BOTH;
             huh.weightx = 1.0;
