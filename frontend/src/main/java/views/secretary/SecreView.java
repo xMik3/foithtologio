@@ -1,7 +1,29 @@
 package views.secretary;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JViewport;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+
+
 
 
 public class SecreView extends JFrame {
@@ -17,7 +39,6 @@ public class SecreView extends JFrame {
         private JPanel ex4;
         private JPanel ex5;
         private JPanel ex6;
-        private JTextArea description;
         private JButton lastSelectedButton;
 
         
@@ -28,7 +49,7 @@ public class SecreView extends JFrame {
 
             try {
                 UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarkLaf");
-                UIManager.put( "Button.arc", 999 );
+                
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -39,7 +60,8 @@ public class SecreView extends JFrame {
             
             
             gridp = new JPanel();
-            gridp.setLayout(new GridBagLayout());
+            gridp.setLayout(new java.awt.GridLayout(2, 3, 10, 10)); // 2 rows, 3 columns, with spacing
+
             
             title0 = new JLabel("Panel1");
             title1 = new JLabel("Panel2");
@@ -83,18 +105,23 @@ public class SecreView extends JFrame {
 
             // Add many labels to force scrollbars
             for (int i = 1; i <= 30; i++) {
-                JButton button = new JButton("• Student ID" + (22390000 + i));
-                button.setFont(new Font("Consolas", Font.PLAIN, 24));
-                button.setForeground(Color.BLACK); // Use white if dark background
-                button.setAlignmentX(Component.CENTER_ALIGNMENT);
-                //button.setPreferredSize(new Dimension(300, 600));
+                JButton button = new JButton("Student ID" + (22390000 + i));
+                button.setFont(new Font("Arial", Font.PLAIN, 24));
+                button.setForeground(Color.LIGHT_GRAY); // Use white if dark background
+                button.setAlignmentX(Component.LEFT_ALIGNMENT);
+                button.setHorizontalAlignment(SwingConstants.LEFT);
+                button.setHorizontalTextPosition(SwingConstants.LEFT);
+                int buttonHeight = 40; // or any value you like
+                button.setPreferredSize(new Dimension(0, buttonHeight));
+                button.setMaximumSize(new Dimension(Integer.MAX_VALUE, buttonHeight));
+                button.setMinimumSize(new Dimension(0, buttonHeight));
                 
                 
                 button.addActionListener
                 (
                     l -> 
                     {
-                        description.append(button.getText() + "\n");
+                        
                         lastSelectedButton = button;
                     }
                 );
@@ -127,10 +154,17 @@ public class SecreView extends JFrame {
 
             // Add many labels to force scrollbars
             for (int i = 1; i <= 30; i++) {
-                JButton button = new JButton("• Course ID " + (6000 + i));
-                button.setFont(new Font("Consolas", Font.PLAIN, 24));
-                button.setForeground(Color.BLACK); // Use white if dark background
-                button.setAlignmentX(Component.CENTER_ALIGNMENT);
+                JButton button = new JButton("Course ID " + (6000 + i));
+                button.setFont(new Font("Arial", Font.PLAIN, 24));
+                button.setForeground(Color.LIGHT_GRAY); // Use white if dark background
+                button.setAlignmentX(Component.LEFT_ALIGNMENT);
+                button.setHorizontalAlignment(SwingConstants.LEFT);
+                button.setHorizontalTextPosition(SwingConstants.LEFT);
+                int buttonHeight = 40; // or any value you like
+                button.setPreferredSize(new Dimension(0, buttonHeight));
+                button.setMaximumSize(new Dimension(Integer.MAX_VALUE, buttonHeight));
+                button.setMinimumSize(new Dimension(0, buttonHeight));
+
                 
                 final int num;
                 num = i;
@@ -138,7 +172,7 @@ public class SecreView extends JFrame {
                 (
                     l -> 
                     {
-                        description.append(button.getText() + "\n");
+                        
                         lastSelectedButton = button;
                     }
                 );
@@ -155,47 +189,83 @@ public class SecreView extends JFrame {
             scrollPane2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
             scrollPane2.setPreferredSize(new Dimension(400, 800)); // Force visible area
 
-            // Add to ex1
+            // Add to ex2
             ex2.add(scrollPane2, BorderLayout.CENTER);
 
 
             ex3.setLayout(new BorderLayout());
+            
+            // Create scrollable list panel
+            JPanel listPanel3 = new JPanel();
+            listPanel3.setLayout(new BoxLayout(listPanel3, BoxLayout.Y_AXIS));
+            listPanel3.setOpaque(false); // For transparency if desired
 
-            description = new JTextArea(45, 55);
-            description.setFont(new Font("Consolas", Font.PLAIN,  16));
-            description.setText("This is a large block of text...\nYou can scroll down...");
-            description.setEditable(true);
-            JScrollPane textScroll = new JScrollPane(description);
-            ex3.add(textScroll, BorderLayout.CENTER); 
+            // Add many labels to force scrollbars
+            for (int i = 1; i <= 30; i++) {
+                JButton button = new JButton("Teacher ID " + (6000 + i));
+                button.setFont(new Font("Arial", Font.PLAIN, 24));
+                button.setForeground(Color.LIGHT_GRAY); // Use white if dark background
+                button.setAlignmentX(Component.LEFT_ALIGNMENT);
+                button.setHorizontalAlignment(SwingConstants.LEFT);
+                button.setHorizontalTextPosition(SwingConstants.LEFT);
+                int buttonHeight = 40; // or any value you like
+                button.setPreferredSize(new Dimension(0, buttonHeight));
+                button.setMaximumSize(new Dimension(Integer.MAX_VALUE, buttonHeight));
+                button.setMinimumSize(new Dimension(0, buttonHeight));
+
+                
+                final int num;
+                num = i;
+                button.addActionListener
+                (
+                    l -> 
+                    {
+                        
+                        lastSelectedButton = button;
+                    }
+                );
+                
+                
+                listPanel3.add(button);
+            }
+
+            // Put listPanel inside a scroll pane
+            JScrollPane scrollPane3 = new JScrollPane(listPanel3);
+            scrollPane3.setOpaque(false);
+            scrollPane3.getViewport().setOpaque(false);
+            scrollPane3.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            scrollPane3.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+            scrollPane3.setPreferredSize(new Dimension(400, 800)); // Force visible area
+
+            // Add to ex1
+            ex3.add(scrollPane3, BorderLayout.CENTER);
+
+            
             
 
             JPanel controlPanel = new JPanel();
             controlPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
 
             JButton addBtn = new JButton("➕ Add");
+            addBtn.setFont(new Font("", Font.PLAIN, 24));
+            addBtn.setAlignmentX(Component.CENTER_ALIGNMENT); // needed for BoxLayout
+            addBtn.setMaximumSize(new Dimension(Short.MAX_VALUE, 50)); // fill horizontally
+            
             JButton deleteBtn = new JButton("🗑 Delete");
+            deleteBtn.setFont(new Font("", Font.PLAIN, 24));
+            deleteBtn.setAlignmentX(Component.CENTER_ALIGNMENT); // needed for BoxLayout
+            deleteBtn.setMaximumSize(new Dimension(Short.MAX_VALUE, 50)); // fill horizontally
+            
             JButton editBtn = new JButton("✏ Edit");
+            editBtn.setFont(new Font("", Font.PLAIN, 24));
+            editBtn.setAlignmentX(Component.CENTER_ALIGNMENT); // needed for BoxLayout
+            editBtn.setMaximumSize(new Dimension(Short.MAX_VALUE, 50)); // fill horizontally
 
             // Add action for Add
             addBtn.addActionListener(e -> {
-                String name = JOptionPane.showInputDialog(this, "Enter new button text:");
-                if (name != null && !name.trim().isEmpty()) {
-                    JButton newButton = new JButton(name);
-                    newButton.setFont(new Font("Consolas", Font.PLAIN, 24));
-                    newButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-                    // add same listener logic
-                    newButton.addActionListener(l -> {
-                        description.append(newButton.getText() + "\n");
-                        lastSelectedButton = newButton;
-                    });
-
-                    // For demo, add to listPanel (students). You could also choose ex2 list
-                    ((JPanel)((JViewport)((JScrollPane)ex1.getComponent(0)).getComponent(0)).getView()).add(newButton);
-                    ex1.revalidate();
-                    ex1.repaint();
-                }
+                addusr form = new addusr("form");
             });
+            
 
             // Delete last selected
             deleteBtn.addActionListener(e -> {
@@ -213,10 +283,7 @@ public class SecreView extends JFrame {
             // Edit last selected
             editBtn.addActionListener(e -> {
                 if (lastSelectedButton != null) {
-                    String newName = JOptionPane.showInputDialog(this, "Edit button text:", lastSelectedButton.getText());
-                    if (newName != null && !newName.trim().isEmpty()) {
-                        lastSelectedButton.setText(newName);
-                    }
+                    showFormDialog(true);
                 } else {
                     JOptionPane.showMessageDialog(this, "No button selected!");
                 }
@@ -232,29 +299,27 @@ public class SecreView extends JFrame {
             controlPanel2.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
 
             JButton addBtn2 = new JButton("➕ Add");
+            addBtn2.setFont(new Font("", Font.PLAIN, 24));
+            addBtn2.setAlignmentX(Component.CENTER_ALIGNMENT); // needed for BoxLayout
+            addBtn2.setMaximumSize(new Dimension(Short.MAX_VALUE, 50)); // fill horizontally
+            
             JButton deleteBtn2 = new JButton("🗑 Delete");
+            deleteBtn2.setFont(new Font("", Font.PLAIN, 24));
+            deleteBtn2.setAlignmentX(Component.CENTER_ALIGNMENT); // needed for BoxLayout
+            deleteBtn2.setMaximumSize(new Dimension(Short.MAX_VALUE, 50)); // fill horizontally
+            
             JButton editBtn2 = new JButton("✏ Edit");
+            editBtn2.setFont(new Font("", Font.PLAIN, 24));
+            editBtn2.setAlignmentX(Component.CENTER_ALIGNMENT); // needed for BoxLayout
+            editBtn2.setMaximumSize(new Dimension(Short.MAX_VALUE, 50)); // fill horizontally
 
             // Add action for Add
             addBtn2.addActionListener(e -> {
-                String name = JOptionPane.showInputDialog(this, "Enter new button text:");
-                if (name != null && !name.trim().isEmpty()) {
-                    JButton newButton = new JButton(name);
-                    newButton.setFont(new Font("Consolas", Font.PLAIN, 24));
-                    newButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-                    // add same listener logic
-                    newButton.addActionListener(l -> {
-                        description.append(newButton.getText() + "\n");
-                        lastSelectedButton = newButton;
-                    });
-
-                    // For demo, add to listPanel (students). You could also choose ex2 list
-                    ((JPanel)((JViewport)((JScrollPane)ex2.getComponent(0)).getComponent(0)).getView()).add(newButton);
-                    ex2.revalidate();
-                    ex2.repaint();
-                }
+                addcrs form = new addcrs("Form");
+                int sem = form.getSemester();
+                String name = form.getName();
             });
+            
 
             // Delete last selected
             deleteBtn2.addActionListener(e -> {
@@ -272,10 +337,7 @@ public class SecreView extends JFrame {
             // Edit last selected
             editBtn2.addActionListener(e -> {
                 if (lastSelectedButton != null) {
-                    String newName = JOptionPane.showInputDialog(this, "Edit button text:", lastSelectedButton.getText());
-                    if (newName != null && !newName.trim().isEmpty()) {
-                        lastSelectedButton.setText(newName);
-                    }
+                    showFormDialog(true);
                 } else {
                     JOptionPane.showMessageDialog(this, "No button selected!");
                 }
@@ -287,44 +349,80 @@ public class SecreView extends JFrame {
 
             ex2.add(controlPanel2, BorderLayout.SOUTH);
 
-            //adjusting each subgrid 
-            GridBagConstraints huh = new GridBagConstraints();
-            huh.fill = GridBagConstraints.BOTH;
-            huh.weightx = 1.0;
-            huh.gridx = 0;
-            huh.gridy=0;
+            JPanel controlPanel3 = new JPanel();
+            controlPanel3.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
+
+            JButton addBtn3 = new JButton("➕ Add");
+            addBtn3.setFont(new Font("", Font.PLAIN, 24));
+            addBtn3.setAlignmentX(Component.CENTER_ALIGNMENT); // needed for BoxLayout
+            addBtn3.setMaximumSize(new Dimension(Short.MAX_VALUE, 50)); // fill horizontally
             
-            huh.weightx=0.5;
-            huh.weighty=0.15;
-            gridp.add(title0,huh);
-            gridp.add(ex4,huh);
+            JButton deleteBtn3 = new JButton("🗑 Delete");
+            deleteBtn3.setFont(new Font("", Font.PLAIN, 24));
+            deleteBtn3.setAlignmentX(Component.CENTER_ALIGNMENT); // needed for BoxLayout
+            deleteBtn3.setMaximumSize(new Dimension(Short.MAX_VALUE, 50)); // fill horizontally
             
-            huh.gridx=1;
-            huh.weightx=0.25;
-            gridp.add(title1,huh);
-            gridp.add(ex5,huh);
-            
-            huh.gridx=2;
-            huh.weightx=0.25;
-            gridp.add(title2,huh);
-            gridp.add(ex6,huh);
-            
-            huh.gridy=1;
-            huh.gridx=0;
-            huh.weightx=0.5;
-            huh.weighty=0.85;
-            gridp.add(ex1,huh);
-            
-            huh.gridx=1;
-            huh.weightx=0.25;
-            gridp.add(ex2,huh);
-            
-            huh.gridx=2;
-            huh.weightx=0.25;
-            gridp.add(ex3,huh);
-            
-            add(gridp);
-            
+            JButton editBtn3 = new JButton("✏ Edit");
+            editBtn3.setFont(new Font("", Font.PLAIN, 24));
+            editBtn3.setAlignmentX(Component.CENTER_ALIGNMENT); // needed for BoxLayout
+            editBtn3.setMaximumSize(new Dimension(Short.MAX_VALUE, 50)); // fill horizontally
+
+            // Add action for Add
+            addBtn3.addActionListener(e -> showFormDialog(false));
+
+            // Delete last selected
+            deleteBtn3.addActionListener(e -> {
+                if (lastSelectedButton != null) {
+                    Container parent = lastSelectedButton.getParent();
+                    parent.remove(lastSelectedButton);
+                    parent.revalidate();
+                    parent.repaint();
+                    lastSelectedButton = null;
+                } else {
+                    JOptionPane.showMessageDialog(this, "No button selected!");
+                }
+            });
+
+            // Edit last selected
+            editBtn3.addActionListener(e -> {
+                if (lastSelectedButton != null) {
+                    showFormDialog(true);
+                } else {
+                    JOptionPane.showMessageDialog(this, "No button selected!");
+                }
+            });
+
+            controlPanel3.add(addBtn3);
+            controlPanel3.add(deleteBtn3);
+            controlPanel3.add(editBtn3);
+
+            ex3.add(controlPanel3, BorderLayout.SOUTH);
+
+            // Main container
+            gridp = new JPanel();
+            gridp.setLayout(new BorderLayout());
+
+            // --- Top row (titles) ---
+            JPanel titleRow = new JPanel(new GridLayout(1, 3, 10, 10));
+            titleRow.setBackground(new Color(80, 80, 80)); // light gray
+            titleRow.add(title0);
+            titleRow.add(title1);
+            titleRow.add(title2);
+            titleRow.setPreferredSize(new Dimension(0, 60)); // control height of title row
+
+            // --- Bottom row (content panels) ---
+            JPanel panelRow = new JPanel(new GridLayout(1, 3, 10, 10));
+            panelRow.add(ex1);
+            panelRow.add(ex2);
+            panelRow.add(ex3);
+
+            // Add rows to main gridp
+            gridp.add(titleRow, BorderLayout.NORTH);
+            gridp.add(panelRow, BorderLayout.CENTER);
+
+            add(gridp, BorderLayout.CENTER);
+
+       
             setExtendedState(JFrame.MAXIMIZED_BOTH);
             setUndecorated(true); // Optional: remove window borders
             setVisible(true);
@@ -337,9 +435,76 @@ public class SecreView extends JFrame {
         new SecreView("bruh");
         
     }
+    
+    private void showFormDialog(boolean isEdit) 
+    {
+        // Form panel
+        JPanel formPanel = new JPanel(new BorderLayout(10, 10));
+        JPanel fieldsPanel = new JPanel();
+        fieldsPanel.setLayout(new BoxLayout(fieldsPanel, BoxLayout.Y_AXIS));
+
+        JTextField nameField = new JTextField(20);
+        JTextArea descriptionArea = new JTextArea(5, 20);
+        descriptionArea.setLineWrap(true);
+        descriptionArea.setWrapStyleWord(true);
+        JScrollPane descriptionScroll = new JScrollPane(descriptionArea);
+
+        // Pre-fill if editing
+        if (isEdit && lastSelectedButton != null) {
+            nameField.setText(lastSelectedButton.getText());
+            descriptionArea.setText("Edit description here..."); // You can map descriptions per button
+        }
+
+        fieldsPanel.add(new JLabel("Name:"));
+        fieldsPanel.add(nameField);
+        fieldsPanel.add(new JLabel("Description:"));
+        fieldsPanel.add(descriptionScroll);
+
+        formPanel.add(fieldsPanel, BorderLayout.CENTER);
+
+        int result = JOptionPane.showConfirmDialog(
+                this,
+                formPanel,
+                isEdit ? "Edit Item" : "Add Item",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result == JOptionPane.OK_OPTION) {
+            String name = nameField.getText().trim();
+            String desc = descriptionArea.getText().trim();
+
+            if (!name.isEmpty()) {
+                if (isEdit && lastSelectedButton != null) {
+                    // Update existing button
+                    lastSelectedButton.setText(name);
+                    
+                } else {
+                    // Create new button
+                    JButton newButton = new JButton(name);
+                    newButton.setFont(new Font("Consolas", Font.PLAIN, 24));
+                    newButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+                    newButton.addActionListener(l -> {
+                        
+                        lastSelectedButton = newButton;
+                    });
+
+                    // Example: Add to student panel (ex1)
+                    ((JPanel)((JViewport)((JScrollPane)ex1.getComponent(0)).getComponent(0)).getView()).add(newButton);
+                    ex1.revalidate();
+                    ex1.repaint();
+
+                    
+                }
+            }
+        }
+    }
+
 
 
 }
+
 
 
 //autaaaaaa
