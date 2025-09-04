@@ -1,14 +1,17 @@
 package models.secretary.request;
 
-import models.secretary.request.CreateUserRequest;
+import models.secretary.request.CreateStudentRequest;
 
-public class EditStudentRequest extends CreateUserRequest{
+public class EditStudentRequest {
 
-    private String studentID;
+    String studentName;
+    String studentSurname;
+    String studentPWD;
 
-    public EditStudentRequest(String studentID,String userName,String userSurname,String userPWD) {
-        super(userName,userSurname,userPWD);
-        this.studentID = studentID;
+    public EditStudentRequest(String studentName,String studentSurname,String studentPWD) {
+        this.studentName = studentName;
+        this.studentSurname = studentSurname;
+        this.studentPWD = studentPWD;
     }
 
 }

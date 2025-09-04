@@ -6,11 +6,10 @@ import java.io.IOException;
 import java.util.Objects;
 
 import api.SecretaryInterface;
-import models.secretary.request.CreateUserRequest;
+import models.secretary.request.CreateStudentRequest;
 import models.general.ApiResponse;
 import client.ApiClient;
 
-import org.jdesktop.swingx.prompt.PromptSupport;
 import com.google.gson.Gson;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -85,48 +84,45 @@ public class addusr extends JFrame {
                  panels[0].add(panels[i]);
             }
     
-             cnfrm.addActionListener
-                (
-                    l -> 
-                    {
+             cnfrm.addActionListener(l -> {
                         String requestname = name.getText();
                         if(requestname.length()<=0){
                             requesterrorlabel.setText("User's Name Can Not Be Empty");
                         }
-                        
-                        
-            CreateUserRequest crtusrRequest = new CreateUserRequest(name.getText(), surname.getText(),pswd.getText());
-            Call<ApiResponse> call = secInterface.addStudent(ApiClient.getToken(),crtusrRequest);
+
+                        int year=2025;
+                        CreateStudentRequest crtusrRequest = new CreateStudentRequest(name.getText(), surname.getText(),pswd.getText(),year);
+                        Call<ApiResponse> call = secInterface.addStudent(ApiClient.getToken(),crtusrRequest);
             
-            call.enqueue(new Callback<ApiResponse>() {
+                        call.enqueue(new Callback<ApiResponse>() {
 
-                @Override
-                public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                            @Override
+                            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
 
-                    if (response.isSuccessful()) {
-                        ApiResponse crtUsrResponse = response.body();
-                        
+                                if (response.isSuccessful()) {
+                                    ApiResponse crtUsrResponse = response.body();
 
-                    } else {
-                        errorLabel.setBounds(500,550,600,50);
-                        try {
-                            ApiResponse loginResponse = gson.fromJson(response.errorBody().string(), ApiResponse.class);
-                            errorLabel.setText("*"+ loginResponse.getMessage());
-                        } catch (IOException ex) {
-                            errorLabel.setText("*"+ex.getMessage());
-                        }
+
+                                } else {
+                                    errorLabel.setBounds(500,550,600,50);
+                                    try {
+                                        ApiResponse loginResponse = gson.fromJson(response.errorBody().string(), ApiResponse.class);
+                                        errorLabel.setText("*"+ loginResponse.getMessage());
+                                    } catch (IOException ex) {
+                                        errorLabel.setText("*"+ex.getMessage());
+                                    }
+                                }
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<ApiResponse> call, Throwable t) {
+                                errorLabel.setText("*Something went wrong. Please try again.");
+                            }
+
+                        });
                     }
-
-                }
-
-                @Override
-                public void onFailure(Call<ApiResponse> call, Throwable t) {
-                    errorLabel.setText("*Something went wrong. Please try again.");
-                }
-
-            });
-                    }
-                );
+            );
             
             add(panels[0]);
             setVisible(true);

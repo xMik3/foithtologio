@@ -2,29 +2,35 @@ package models.students;
 
 public class RegisteredCourse {
 
-    private String CID;
-    private String CNAME;
-    private String TNAME;
-    private String TSURNAME;
-    private Double GRADE;
+    private String ID;
+    private String Name;
+    private int Semester;
+    private Double Grade;
+    private String TeacherName;
+    private String TeacherSurname;
 
-    public String getCID() {
-        return this.CID;
+    public String getID() {
+        return this.ID;
     }
 
-    public String getCNAME() {
-        return this.CNAME;
+    public String getName() {
+        return this.Name;
     }
 
-    public String getTSURNAME() {
-        return this.TSURNAME;
+    public int getSemester() {
+        return this.Semester;
     }
 
-    public String getTNAME() {
-        return this.TNAME;
+    public Double getGrade() {
+        return this.Grade;
     }
 
-    public Double getGRADE() {
-        return this.GRADE;
+    public String getTeacherName() {
+        return this.TeacherName;
     }
+
+    public String getTeacherSurname() {
+        return this.TeacherSurname;
+    }
+
 }

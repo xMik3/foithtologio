@@ -47,7 +47,7 @@ public class TestController {
                             List<Course> courses = response.body().getCourses();
 
                             for (Course course : courses) {
-                                System.out.println(course.getNAME());
+                                System.out.println(course.getName());
                             }
                         }
                         else{

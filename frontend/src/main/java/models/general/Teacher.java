@@ -2,24 +2,19 @@ package models.general;
 
 public class Teacher {
 
-    private String TID;
-    private String NAME;
-    private String SURNAME;
-    private String PASSWORD;
+    private String ID;
+    private String Name;
+    private String Surname;
 
     public String getTID() {
-        return this.TID;
+        return this.ID;
     }
 
     public String getSURNAME() {
-        return this.SURNAME;
-    }
-
-    public String getPASSWORD() {
-        return this.PASSWORD;
+        return this.Name;
     }
 
     public String getNAME() {
-        return this.NAME;
+        return this.Surname;
     }
 }

@@ -29,8 +29,12 @@ public class addcrs extends JFrame {
      private JLabel errorLabel;
      
      private JButton cnfrm;
-     
-            public addcrs(String title){
+
+     public int getSemester(){
+         return Integer.parseInt(semester.getText());
+     }
+
+     public addcrs(String title){
             super(title);
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             
@@ -129,8 +133,8 @@ public class addcrs extends JFrame {
             panels[0].setVisible(true);
             setSize(1200,700);
     }
-            
-            public static void main(String args[]){
+
+    public static void main(String args[]){
                 new addcrs("bruh");
             }
             

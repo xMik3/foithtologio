@@ -2,20 +2,20 @@ package models.teacher;
 
 public class ManagedStudent {
 
-    private String SID;
-    private String NAME;
-    private String SURNAME;
+    private String ID;
+    private String Name;
+    private String Surname;
 
-    public String getSID() {
-        return this.SID;
+    public String getID() {
+        return this.ID;
     }
 
     public String getNAME() {
-        return this.NAME;
+        return this.Name;
     }
 
     public String getSURNAME() {
-        return this.SURNAME;
+        return this.Surname;
     }
 
 }

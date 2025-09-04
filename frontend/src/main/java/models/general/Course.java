@@ -2,24 +2,29 @@ package models.general;
 
 public class Course {
 
-    private String CID;
-    private String NAME;
-    private int SEMESTER;
-    private String TID;
+    private String ID;
+    private String Name;
+    private int Semester;
+    private String TeacherName;
+    private String TeacherSurname;
 
-    public String getCID() {
-        return this.CID;
+    public String getID() {
+        return this.ID;
     }
 
-    public String getNAME() {
-        return this.NAME;
+    public String getName() {
+        return this.Name;
     }
 
-    public int getSEMESTER() {
-        return this.SEMESTER;
+    public int getSemester() {
+        return this.Semester;
     }
 
-    public String getTID() {
-        return this.TID;
+    public String getTeacherName() {
+        return this.TeacherName;
+    }
+
+    public String getTeacherSurname() {
+        return this.TeacherSurname;
     }
 }
