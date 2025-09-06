@@ -4,12 +4,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.util.Objects;
-
-import api.LoginInterface;
-import models.login.request.LoginRequest;
-import models.login.response.LoginResponse;
+import java.util.ArrayList;
+import api.StudentInterface;
+import models.students.RegisteredCourse;
+import models.students.response.GetRegisteredCoursesResponse;
 import models.general.ApiResponse;
+import models.general.Course;
 import client.ApiClient;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 
 import org.jdesktop.swingx.prompt.PromptSupport;
 import com.google.gson.Gson;
@@ -25,18 +28,32 @@ public class StudView extends JFrame{
     JPanel btnpanel1;
     JPanel btnpanel2;
     JPanel panel;
-    
+    JPanel infop;
+    private JLabel errorLabel;
     JLabel title1;
     JLabel title2;
     
+    JLabel tname;
+    JLabel tsurname;
+    JLabel smstr;
+    JLabel nm;
+    JLabel cid;
+    
+    int curind;
+    
     JButton addcrs;
     JButton rmcrs;
+    DefaultListModel<String> crsesName;
+    JList crsesName2;
+    ArrayList<RegisteredCourse> regcrses;
+    
+    String toDelete;
     
         public StudView(String title){
         super(title);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        
+        StudentInterface stuInterface = ApiClient.getClient().create(StudentInterface.class);
         Gson gson = new Gson();
         
          try {
@@ -46,8 +63,49 @@ public class StudView extends JFrame{
         } catch (Exception e) {
             e.printStackTrace();
         }
+        Color originalBackground = UIManager.getColor("Button.background");
+        errorLabel = new JLabel();
         
+        crsesName = new DefaultListModel<>();    
+        crsesName2 = new JList(crsesName);
+        regcrses = new ArrayList<>();
+        crsesName2.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        
+        Call<GetRegisteredCoursesResponse> call = stuInterface.getRegisteredCourses(ApiClient.getToken());
+            
+            call.enqueue(new Callback<GetRegisteredCoursesResponse>() {
+
+            @Override
+            public void onResponse(Call<GetRegisteredCoursesResponse> call, Response<GetRegisteredCoursesResponse> response) {
+                if (response.isSuccessful()) {
+                        GetRegisteredCoursesResponse getcrsesResponse = response.body();
+                        
+                        regcrses = getcrsesResponse.getRegisteredCourses();
+
+                } else {
+                        errorLabel.setBounds(500,550,600,50);
+                            try {
+                                 ApiResponse loginResponse = gson.fromJson(response.errorBody().string(), ApiResponse.class);
+                                 errorLabel.setText("*"+ loginResponse.getMessage());
+                            } catch (IOException ex) {
+                                 errorLabel.setText("*"+ex.getMessage());
+                                    }
+                                }
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<GetRegisteredCoursesResponse> call, Throwable t) {
+                                errorLabel.setText("*Something went wrong. Please try again.");
+                            }
+
+                        }); 
+            
+            
         panel = new JPanel(new BorderLayout());
+        
+        infop = new JPanel();
+        infop.setLayout(new BoxLayout(infop,BoxLayout.Y_AXIS));
         
         bodypanel1 = new JPanel();
         bodypanel1.setLayout(new BorderLayout());
@@ -77,7 +135,8 @@ public class StudView extends JFrame{
         rmcrs.setFont(new Font("", Font.PLAIN, 24));
         rmcrs.setAlignmentX(Component.CENTER_ALIGNMENT); // needed for BoxLayout
         rmcrs.setMaximumSize(new Dimension(Short.MAX_VALUE, 50)); // fill horizontally
-        
+        rmcrs.setOpaque(false);
+        rmcrs.setBackground(new Color(0, 0, 0, 50));
         
         titlepanel1 = new JPanel();
         titlepanel1.setLayout(new BorderLayout());
@@ -89,41 +148,41 @@ public class StudView extends JFrame{
         titlepanel2.add(title2, BorderLayout.CENTER);
         titlepanel2.setPreferredSize(new Dimension(0, 60));
         
+        cid = new JLabel("Course's ID:");
+        cid.setFont(new Font("Arial", Font.PLAIN, 20));
+        
+        tname = new JLabel("Course instructed by:");
+        tname.setFont(new Font("Arial", Font.PLAIN, 20));
+        
+        tsurname = new JLabel("tsur");
+        tsurname.setFont(new Font("Arial", Font.PLAIN, 20));
+        
+        smstr = new JLabel("smstr");
+        smstr.setFont(new Font("Arial", Font.PLAIN, 20));
+        
+        nm = new JLabel("nm");
+        nm.setFont(new Font("Arial", Font.PLAIN, 20));
+        
         JPanel controlPanel = new JPanel();
         controlPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
         
         controlPanel.add(addcrs);
         controlPanel.add(rmcrs);
         
+        for(int i=0;i<regcrses.size();i++){
+            RegisteredCourse course = regcrses.get(i);
+            String label = course.getID();
+            String name = course.getName();
+            crsesName.add(i,label + "-" + name); 
+        }
+        
+        
+        
         JPanel listPanel = new JPanel();
             listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
             listPanel.setOpaque(false); // For transparency if desired
 
-            // Add many labels to force scrollbars
-            for (int i = 1; i <= 30; i++) {
-                JButton button = new JButton("• Item " + i);
-                button.setFont(new Font("Arial", Font.PLAIN, 24));
-                button.setForeground(Color.LIGHT_GRAY); // Use white if dark background
-                button.setAlignmentX(Component.LEFT_ALIGNMENT);
-                button.setHorizontalAlignment(SwingConstants.LEFT);
-                button.setHorizontalTextPosition(SwingConstants.LEFT);
-                int buttonHeight = 40; // or any value you like
-                button.setPreferredSize(new Dimension(0, buttonHeight));
-                button.setMaximumSize(new Dimension(Integer.MAX_VALUE, buttonHeight));
-                button.setMinimumSize(new Dimension(0, buttonHeight));
-                
-                
-                button.addActionListener
-                (
-                    l -> 
-                    {
-                        System.out.println("Clicked: " + button.getText());
-                    }
-                );
-                
-                
-                listPanel.add(button);
-            }
+            listPanel.add(crsesName2);
 
             // Put listPanel inside a scroll pane
             JScrollPane scrollPane = new JScrollPane(listPanel);
@@ -137,7 +196,7 @@ public class StudView extends JFrame{
                 (
                     l -> 
                     {
-                        System.out.println("Clicked: " + addcrs.getText());
+                      new addregcrs();
                     }
                 );
             
@@ -145,14 +204,66 @@ public class StudView extends JFrame{
                 (
                     l -> 
                     {
-                        System.out.println("Clicked: " + rmcrs.getText());
+                        RegisteredCourse course = regcrses.get(curind);
+                        
+            Call<ApiResponse> call2 = stuInterface.deleteCourse(course.getID(),ApiClient.getToken());
+            
+            call2.enqueue(new Callback<ApiResponse>() {
+
+            @Override
+            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                if (response.isSuccessful()) {
+                        ApiResponse delResponse = response.body();
+
+                } else {
+                        errorLabel.setBounds(500,550,600,50);
+                            try {
+                                 ApiResponse loginResponse = gson.fromJson(response.errorBody().string(), ApiResponse.class);
+                                 errorLabel.setText("*"+ loginResponse.getMessage());
+                            } catch (IOException ex) {
+                                 errorLabel.setText("*"+ex.getMessage());
+                                    }
+                                }
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<ApiResponse> call, Throwable t) {
+                                errorLabel.setText("*Something went wrong. Please try again.");
+                            }
+
+                        }); 
                     }
                 );
             
+            crsesName2.addListSelectionListener
+                (
+                    l -> 
+                    {
+                        rmcrs.setOpaque(true);
+                        rmcrs.setBackground(originalBackground);
+                        
+                        curind = crsesName2.getSelectedIndex();
+                        RegisteredCourse course = regcrses.get(curind);
+                        nm.setText("Course's Name:" + course.getName());
+                        cid.setText("Course's ID:" + course.getID());
+                        smstr.setText("Course's Semester:" + course.getSemester());
+                        tname.setText("Course instructed by:" + course.getTeacherSurname() + course.getTeacherName());
+                    }
+                );
+            
+            infop.add(nm);
+            infop.add(Box.createRigidArea(new Dimension(0, 20)));
+            infop.add(cid);
+            infop.add(Box.createRigidArea(new Dimension(0, 20)));
+            infop.add(smstr);
+            infop.add(Box.createRigidArea(new Dimension(0, 20)));
+            infop.add(tname);
+            
             
             bodypanel1.add(scrollPane, BorderLayout.CENTER);
-            bodypanel1.add(controlPanel, BorderLayout.SOUTH);
-            
+            bodypanel2.add(controlPanel, BorderLayout.SOUTH);
+            bodypanel2.add(infop, BorderLayout.NORTH);
             
             // row 1: titles
             JPanel titleRow = new JPanel(new GridLayout(1, 2));

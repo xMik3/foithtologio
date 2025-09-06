@@ -1,7 +1,7 @@
 package api;
 
 import models.general.ApiResponse;
-import models.secretary.response.GetCoursesResponse;
+import models.students.response.GetAvailableCoursesResponse;
 import models.students.response.GetRegisteredCoursesResponse;
 import models.students.request.RegisterCoursesRequest;
 
@@ -21,6 +21,6 @@ public interface StudentInterface {
     Call<ApiResponse> deleteCourse(@Path("courseID") String courseID, @Header("Authorization") String token);
 
     @GET("/availableCourses")
-    Call<GetCoursesResponse> getAvailableCourses(@Header("Authorization") String token);
+    Call<GetAvailableCoursesResponse> getAvailableCourses(@Header("Authorization") String token);
 
 }
