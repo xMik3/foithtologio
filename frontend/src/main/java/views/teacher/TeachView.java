@@ -52,9 +52,9 @@ public class TeachView extends JFrame {
             gridp = new JPanel();
             gridp.setLayout(new GridBagLayout());
             
-            title0 = new JLabel("Panel1");
-            title1 = new JLabel("Panel2");
-            title2 = new JLabel("Panel3");
+            title0 = new JLabel("Students");
+            title1 = new JLabel("Courses");
+            title2 = new JLabel("Description");
             
             title0.setFont(new Font("Consolas", Font.BOLD, 20));
             title0.setHorizontalAlignment(SwingConstants.CENTER);
@@ -86,10 +86,16 @@ public class TeachView extends JFrame {
             listPanel.setOpaque(false);
 
             for (int i = 1; i <= 30; i++) {
-                JButton button = new JButton("• Teacher ID" + (1000 + i));
-                button.setFont(new Font("Consolas", Font.PLAIN, 24));
-                button.setForeground(Color.BLACK);
+                JButton button = new JButton("Student ID" + (1000 + i));
+                button.setFont(new Font("Arial", Font.PLAIN, 24));
+                button.setForeground(Color.LIGHT_GRAY); // Use white if dark background
                 button.setAlignmentX(Component.LEFT_ALIGNMENT);
+                button.setHorizontalAlignment(SwingConstants.LEFT);
+                button.setHorizontalTextPosition(SwingConstants.LEFT);
+                int buttonHeight = 40; // or any value you like
+                button.setPreferredSize(new Dimension(0, buttonHeight));
+                button.setMaximumSize(new Dimension(Integer.MAX_VALUE, buttonHeight));
+                button.setMinimumSize(new Dimension(0, buttonHeight));
                 button.addActionListener(
                     l -> description.append(button.getText() + "\n")
                 );
@@ -111,10 +117,16 @@ public class TeachView extends JFrame {
             listPanel2.setOpaque(false);
 
             for (int i = 1; i <= 30; i++) {
-                JButton button = new JButton("• Course ID " + (6000 + i));
-                button.setFont(new Font("Consolas", Font.PLAIN, 24));
-                button.setForeground(Color.BLACK);
+                JButton button = new JButton("Course ID " + (6000 + i));
+                button.setFont(new Font("Arial", Font.PLAIN, 24));
+                button.setForeground(Color.LIGHT_GRAY); // Use white if dark background
                 button.setAlignmentX(Component.LEFT_ALIGNMENT);
+                button.setHorizontalAlignment(SwingConstants.LEFT);
+                button.setHorizontalTextPosition(SwingConstants.LEFT);
+                int buttonHeight = 40; // or any value you like
+                button.setPreferredSize(new Dimension(0, buttonHeight));
+                button.setMaximumSize(new Dimension(Integer.MAX_VALUE, buttonHeight));
+                button.setMinimumSize(new Dimension(0, buttonHeight));
                 button.addActionListener(
                     l -> description.append(button.getText() + "\n")
                 );

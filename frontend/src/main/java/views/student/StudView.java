@@ -42,13 +42,12 @@ public class StudView extends JFrame{
          try {
             UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarkLaf");
             UIManager.put("TextComponent.arc", 25);
-            UIManager.put( "Button.arc", 999 );
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
         
-        panel = new JPanel();
-        panel.setLayout(new GridLayout(3,2));
+        panel = new JPanel(new BorderLayout());
         
         bodypanel1 = new JPanel();
         bodypanel1.setLayout(new BorderLayout());
@@ -69,21 +68,32 @@ public class StudView extends JFrame{
         title2.setFont(new Font("Arial", Font.PLAIN, 25));
         
         addcrs = new JButton("Add");
-        addcrs.setFont(new Font("Arial", Font.PLAIN, 25));
+        addcrs.setFont(new Font("", Font.PLAIN, 24));
+        addcrs.setAlignmentX(Component.CENTER_ALIGNMENT); // needed for BoxLayout
+        addcrs.setMaximumSize(new Dimension(Short.MAX_VALUE, 50)); // fill horizontally
         
         
         rmcrs = new JButton("Remove");
-        rmcrs.setFont(new Font("Arial", Font.PLAIN, 25));
+        rmcrs.setFont(new Font("", Font.PLAIN, 24));
+        rmcrs.setAlignmentX(Component.CENTER_ALIGNMENT); // needed for BoxLayout
+        rmcrs.setMaximumSize(new Dimension(Short.MAX_VALUE, 50)); // fill horizontally
         
         
         titlepanel1 = new JPanel();
         titlepanel1.setLayout(new BorderLayout());
         titlepanel1.add(title1,BorderLayout.CENTER);
+        titlepanel1.setPreferredSize(new Dimension(0, 60));
         
         titlepanel2 = new JPanel();
         titlepanel2.setLayout(new BorderLayout());
         titlepanel2.add(title2, BorderLayout.CENTER);
+        titlepanel2.setPreferredSize(new Dimension(0, 60));
         
+        JPanel controlPanel = new JPanel();
+        controlPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        
+        controlPanel.add(addcrs);
+        controlPanel.add(rmcrs);
         
         JPanel listPanel = new JPanel();
             listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
@@ -92,8 +102,15 @@ public class StudView extends JFrame{
             // Add many labels to force scrollbars
             for (int i = 1; i <= 30; i++) {
                 JButton button = new JButton("• Item " + i);
-                button.setFont(new Font("Arial", Font.PLAIN, 25));
+                button.setFont(new Font("Arial", Font.PLAIN, 24));
+                button.setForeground(Color.LIGHT_GRAY); // Use white if dark background
                 button.setAlignmentX(Component.LEFT_ALIGNMENT);
+                button.setHorizontalAlignment(SwingConstants.LEFT);
+                button.setHorizontalTextPosition(SwingConstants.LEFT);
+                int buttonHeight = 40; // or any value you like
+                button.setPreferredSize(new Dimension(0, buttonHeight));
+                button.setMaximumSize(new Dimension(Integer.MAX_VALUE, buttonHeight));
+                button.setMinimumSize(new Dimension(0, buttonHeight));
                 
                 
                 button.addActionListener
@@ -132,17 +149,28 @@ public class StudView extends JFrame{
                     }
                 );
             
-            bodypanel1.add(scrollPane,BorderLayout.CENTER);
-            btnpanel1.add(addcrs,BorderLayout.NORTH);
-            btnpanel2.add(rmcrs,BorderLayout.NORTH);
             
-            panel.add(titlepanel1);
-            panel.add(titlepanel2);
-            panel.add(bodypanel1);
-            panel.add(bodypanel2);
-            panel.add(btnpanel1);
-            panel.add(btnpanel2);
+            bodypanel1.add(scrollPane, BorderLayout.CENTER);
+            bodypanel1.add(controlPanel, BorderLayout.SOUTH);
             
+            
+            // row 1: titles
+            JPanel titleRow = new JPanel(new GridLayout(1, 2));
+            titlepanel1.setBackground(new Color(80, 80, 80));
+            titlepanel2.setBackground(new Color(80, 80, 80));
+            titleRow.add(titlepanel1);
+            titleRow.add(titlepanel2);
+            
+
+            // row 2: body (two columns)
+            JPanel bodyRow = new JPanel(new GridLayout(1, 2));
+            bodyRow.add(bodypanel1); // left side = scrollPane + controlPanel
+            bodyRow.add(bodypanel2); // right side = info panel
+
+            // add to panel
+            panel.add(titleRow, BorderLayout.NORTH);
+            panel.add(bodyRow, BorderLayout.CENTER);
+
             panel.setVisible(true);
             setVisible(true);
             setSize(1200,700);
