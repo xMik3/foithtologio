@@ -19,7 +19,7 @@ public class ApiClient {
 
     public static Retrofit getClient(){
         if(client == null){
-            ApiClient.client = new Retrofit.Builder().baseUrl("http://localhost:3000").addConverterFactory(GsonConverterFactory.create()).build();
+            ApiClient.client = new Retrofit.Builder().baseUrl("https://foithtologio.synapselab.me").addConverterFactory(GsonConverterFactory.create()).build();
         }
 
         return client;

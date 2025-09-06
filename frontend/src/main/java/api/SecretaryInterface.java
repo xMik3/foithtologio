@@ -18,7 +18,7 @@ import retrofit2.http.*;
 public interface SecretaryInterface {
 
     @PUT("/courses")
-    Call<ApiResponse> addCourse(@Header("Authorization") String token, CreateCourseRequest request);
+    Call<ApiResponse> addCourse(@Header("Authorization") String token, @Body CreateCourseRequest request);
 
     @GET("/courses")
     Call<GetCoursesResponse> getCourses(@Header("Authorization") String token);
@@ -37,7 +37,7 @@ public interface SecretaryInterface {
 
 
     @PUT("/teachers")
-    Call<ApiResponse> addTeacher(@Header("Authorization") String token, CreateTeacherRequest request);
+    Call<ApiResponse> addTeacher(@Header("Authorization") String token, @Body CreateTeacherRequest request);
 
     @GET("/teachers")
     Call<GetTeachersResponse> getTeachers(@Header("Authorization") String token);
@@ -46,23 +46,23 @@ public interface SecretaryInterface {
     Call<GetTeacherResponse> getTeacher(@Header("Authorization") String token,@Path("teacherID") String teacherID);
 
     @PATCH("/teachers/{teacherID}")
-    Call<ApiResponse> editTeacher(@Header("Authorization") String token, @Path("teacherID") String teacherID, EditTeacherRequest request);
+    Call<ApiResponse> editTeacher(@Header("Authorization") String token, @Path("teacherID") String teacherID,@Body EditTeacherRequest request);
 
     @DELETE("/teacher/{teacherID}")
     Call<ApiResponse> deleteTeacher(@Header("Authorization") String token, @Path("teacherID") String teacherID);
 
 
     @PUT("/students")
-    Call<ApiResponse> addStudent(@Header("Authorization") String token, CreateStudentRequest request);
+    Call<ApiResponse> addStudent(@Header("Authorization") String token, @Body CreateStudentRequest request);
 
     @GET("/students/year/{year}")
     Call<GetStudentsResponse> getStudents(@Header("Authorization") String token,@Path("year") int year);
 
     @GET("/students/{studentID}")
-    Call<GetStudentsResponse> getStudents(@Header("Authorization") String token,@Path("studentID") String studentID);
+    Call<GetStudentsResponse> getStudent(@Header("Authorization") String token,@Path("studentID") String studentID);
 
     @PATCH("/students/{studentID}")
-    Call<ApiResponse> editStudent(@Header("Authorization") String token, @Path("studentID") String studentID, EditStudentRequest request);
+    Call<ApiResponse> editStudent(@Header("Authorization") String token, @Path("studentID") String studentID,@Body EditStudentRequest request);
 
     @DELETE("/students/{studentID}")
     Call<ApiResponse> deleteStudent(@Header("Authorization") String token, @Path("studentID") String studentID);

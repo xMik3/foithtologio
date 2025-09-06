@@ -11,6 +11,8 @@ import models.login.response.LoginResponse;
 import models.general.ApiResponse;
 import client.ApiClient;
 
+import views.secretary.SecretaryView;
+
 import org.jdesktop.swingx.prompt.PromptSupport;
 import com.google.gson.Gson;
 import retrofit2.Call;
@@ -95,7 +97,15 @@ public class Login extends JFrame{
                         LoginResponse loginResponse = response.body();
                         ApiClient.setToken("Bearer " + loginResponse.getToken());
 
-                        //Open Next Window Depending On User
+                        if(userType=="Secretary"){
+
+                            JFrame secretaryWindow = new SecretaryView("Secretary"); // your other JFrame class
+                            secretaryWindow.setLocationRelativeTo(null);
+                            secretaryWindow.setVisible(true);
+
+                            dispose();
+
+                        }
 
                     } else {
                         errorLabel.setBounds(500,550,600,50);

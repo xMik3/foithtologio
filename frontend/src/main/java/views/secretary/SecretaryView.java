@@ -25,13 +25,13 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class SecreView extends JFrame {
+public class SecretaryView extends JFrame {
         
     private JPanel gridp; //One big panel with customizable Grid layout
     private JLabel title0;
     private JLabel title1;
     private JLabel title2;
-    //example subpanels to see where the grid splits
+
     private JPanel ex1;
     private JPanel ex2;
     private JPanel ex3;
@@ -51,11 +51,11 @@ public class SecreView extends JFrame {
 
 
 
-    public SecreView(String title) {
+    public SecretaryView(String title) {
 
         super(title);
 
-        ApiClient.setToken("Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOjAsInVzZXJUeXBlIjoiU2VjcmV0YXJ5IiwiaWF0IjoxNzU3MTAzNjg3LCJleHAiOjE3NTcxMTA4ODd9.wvJdBFk018XM2D3jGW_TGvPEX5ct1to2F-zP3PbnG4w");
+        ApiClient.setToken("Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOjAsInVzZXJUeXBlIjoiU2VjcmV0YXJ5IiwiaWF0IjoxNzU3MTg3Mjk5LCJleHAiOjE3NTcxOTQ0OTl9.jgG7EJ8brlpJAJlpMskjqcCUcHdKdw8CHVpmfzDwTLM");
         Gson gson = new Gson();
 
         try {
@@ -65,9 +65,7 @@ public class SecreView extends JFrame {
             e.printStackTrace();
         }
 
-
         SecretaryInterface secretaryInterface = ApiClient.getClient().create(SecretaryInterface.class);
-
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -76,6 +74,17 @@ public class SecreView extends JFrame {
         gridp = new JPanel();
         gridp.setLayout(new java.awt.GridLayout(2, 3, 10, 10)); // 2 rows, 3 columns, with spacing
 
+        JLabel errorLabel1 = new JLabel("");
+        errorLabel1.setFont(new Font("Arial", Font.PLAIN, 25));
+        errorLabel1.setForeground(Color.WHITE);
+
+        JLabel errorLabel2 = new JLabel("");
+        errorLabel2.setFont(new Font("Arial", Font.PLAIN, 25));
+        errorLabel2.setForeground(Color.WHITE);
+
+        JLabel errorLabel3 = new JLabel("");
+        errorLabel3.setFont(new Font("Arial", Font.PLAIN, 25));
+        errorLabel3.setForeground(Color.WHITE);
 
         title0 = new JLabel("Students");
         title1 = new JLabel("Courses");
@@ -96,6 +105,7 @@ public class SecreView extends JFrame {
         ex4 = new JPanel();
         ex5 = new JPanel();
         ex6 = new JPanel();
+
         ex4.setBackground(Color.GRAY);
         ex5.setBackground(Color.GRAY);
         ex6.setBackground(Color.GRAY);
@@ -152,7 +162,13 @@ public class SecreView extends JFrame {
 
         // Add action for Add
         addBtn.addActionListener(e -> {
-            addusr form = new addusr("form");
+            JDialog popup = new JDialog(this, null, true); // modal
+
+            popup.setLocationRelativeTo(this);
+            popup.add(new AddStudent(secretaryInterface));
+            popup.pack();
+            popup.setResizable(false);
+            popup.setVisible(true);
         });
 
 
@@ -214,7 +230,16 @@ public class SecreView extends JFrame {
 
         // Edit last selected
         editBtn.addActionListener(e -> {
+            JDialog popup = new JDialog(this, null, true); // modal
 
+            int index = studentList.getSelectedIndex();
+            Student student = students.get(index);
+
+            popup.setLocationRelativeTo(null);
+            popup.add(new EditStudent(secretaryInterface,student));
+            popup.pack();
+            popup.setResizable(false);
+            popup.setVisible(true);
         });
 
         controlPanel.add(addBtn);
@@ -258,8 +283,7 @@ public class SecreView extends JFrame {
         JPanel yearSelectionPanel = new JPanel(new GridLayout(1, 2, 10, 0));
         yearSelectionPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JButton getStudents = new JButton("Get Students");
-        getStudents.setFont(new Font("Arial", Font.PLAIN, 24));
+
 
         int currentYear = Year.now().getValue();
         int yearSelections = currentYear - 2000 + 1;
@@ -271,6 +295,51 @@ public class SecreView extends JFrame {
 
         JComboBox yearSelection = new JComboBox(years);
         yearSelection.setFont(new Font("Arial", Font.PLAIN, 24));
+
+        JButton getStudents = new JButton("Get Students");
+        getStudents.setFont(new Font("Arial", Font.PLAIN, 24));
+        getStudents.addActionListener(e -> {
+
+            Call<GetStudentsResponse> getStudentsCall = secretaryInterface.getStudents(ApiClient.getToken(),Integer.parseInt(yearSelection.getSelectedItem().toString()));
+            getStudentsCall.enqueue(new Callback<GetStudentsResponse>() {
+
+                @Override
+                public void onResponse(Call<GetStudentsResponse> call, Response<GetStudentsResponse> response) {
+
+                    if(response.isSuccessful()) {
+                        errorLabel1.setText("");
+
+                        GetStudentsResponse getStudentsResponse = response.body();
+
+                        studentModel.clear();
+
+                        students = getStudentsResponse.getStudents();
+
+                        for(int i = 0; i < students.size(); i++) {
+                            Student student = students.get(i);
+
+                            String studentLabel = student.getID() + " - " + student.getName() + " " + student.getSurname();
+
+                            studentModel.add(i, studentLabel);
+                        }
+
+                    }
+                    else{
+                        errorLabel1.setBounds(125,425,600,50);
+                        errorLabel1.setText("No Students Found.");
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Call<GetStudentsResponse> call, Throwable throwable) {
+                    errorLabel1.setBounds(150,425,600,50);
+                    errorLabel1.setText("Network Error.");
+
+                }
+            });
+
+        });
 
         yearSelectionPanel.add(yearSelection, BorderLayout.WEST);
         yearSelectionPanel.add(getStudents, BorderLayout.EAST);
@@ -318,6 +387,7 @@ public class SecreView extends JFrame {
         ex1.add(controlPanel, controlPanelConstraints);
 
 
+
         ex2.setLayout(new GridBagLayout());
         ex2.setBorder(BorderFactory.createEmptyBorder(10, 0, 3, 0));
 
@@ -348,7 +418,13 @@ public class SecreView extends JFrame {
 
         // Add action for Add
         addBtn2.addActionListener(e -> {
+            JDialog popup = new JDialog(this, null, true); // modal
 
+            popup.setLocationRelativeTo(this);
+            popup.add(new AddCourse(secretaryInterface));
+            popup.pack();
+            popup.setResizable(false);
+            popup.setVisible(true);
         });
 
         // Delete last selected
@@ -410,7 +486,16 @@ public class SecreView extends JFrame {
 
         // Edit last selected
         editBtn2.addActionListener(e -> {
+            JDialog popup = new JDialog(this, null, true); // modal
 
+            int index = courseList.getSelectedIndex();
+            Course course = courses.get(index);
+
+            popup.setLocationRelativeTo(null);
+            popup.add(new EditCourse(secretaryInterface,course));
+            popup.pack();
+            popup.setResizable(false);
+            popup.setVisible(true);
         });
 
         controlPanel2.add(addBtn2);
@@ -501,7 +586,13 @@ public class SecreView extends JFrame {
 
         // Add action for Add
         addBtn3.addActionListener(e -> {
+            JDialog popup = new JDialog(this, null, true); // modal
 
+            popup.setLocationRelativeTo(this);
+            popup.add(new AddTeacher(secretaryInterface));
+            popup.pack();
+            popup.setResizable(false);
+            popup.setVisible(true);
         });
 
         // Delete last selected
@@ -563,7 +654,16 @@ public class SecreView extends JFrame {
 
         // Edit last selected
         editBtn3.addActionListener(e -> {
+            JDialog popup = new JDialog(this, null, true); // modal
 
+            int index = teacherList.getSelectedIndex();
+            Teacher teacher = teachers.get(index);
+
+            popup.setLocationRelativeTo(null);
+            popup.add(new EditTeacher(secretaryInterface,teacher));
+            popup.pack();
+            popup.setResizable(false);
+            popup.setVisible(true);
         });
 
         controlPanel3.add(addBtn3);
@@ -651,19 +751,6 @@ public class SecreView extends JFrame {
         gridp.add(panelRow, BorderLayout.CENTER);
         gridp.setBounds(0,0,1400,900);
 
-
-        JLabel errorLabel1 = new JLabel("");
-        errorLabel1.setFont(new Font("Arial", Font.PLAIN, 25));
-        errorLabel1.setForeground(Color.WHITE);
-
-        JLabel errorLabel2 = new JLabel("");
-        errorLabel2.setFont(new Font("Arial", Font.PLAIN, 25));
-        errorLabel2.setForeground(Color.WHITE);
-
-        JLabel errorLabel3 = new JLabel("");
-        errorLabel3.setFont(new Font("Arial", Font.PLAIN, 25));
-        errorLabel3.setForeground(Color.WHITE);
-
         JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.setPreferredSize(new Dimension(1400, 900));
         layeredPane.add(gridp,JLayeredPane.DEFAULT_LAYER);
@@ -693,7 +780,7 @@ public class SecreView extends JFrame {
 
 
 
-        Call<GetStudentsResponse> getStudentsCall = secretaryInterface.getStudents(ApiClient.getToken(),2022);
+        Call<GetStudentsResponse> getStudentsCall = secretaryInterface.getStudents(ApiClient.getToken(),Integer.parseInt(yearSelection.getSelectedItem().toString()));
         getStudentsCall.enqueue(new Callback<GetStudentsResponse>() {
 
             @Override
@@ -701,8 +788,6 @@ public class SecreView extends JFrame {
 
                 if(response.isSuccessful()) {
                     GetStudentsResponse getStudentsResponse = response.body();
-
-                    System.out.println("student success");
 
                     students = getStudentsResponse.getStudents();
 
@@ -714,14 +799,14 @@ public class SecreView extends JFrame {
                         studentModel.add(i, studentLabel);
                     }
 
-                    completedRequest();
+                    completedRequest(true);
 
                 }
                 else{
                     errorLabel1.setBounds(125,425,600,50);
                     errorLabel1.setText("No Students Found.");
 
-                    completedRequest();
+                    completedRequest(true);
 
                 }
 
@@ -733,7 +818,7 @@ public class SecreView extends JFrame {
                     errorLabel1.setBounds(150,425,600,50);
                     errorLabel1.setText("Network Error.");
 
-                    completedRequest();
+                    completedRequest(false);
 
             }
         });
@@ -747,8 +832,6 @@ public class SecreView extends JFrame {
                 if(response.isSuccessful()) {
                     GetCoursesResponse getCoursesResponse = response.body();
 
-                    System.out.println("course success");
-
                     courses = getCoursesResponse.getCourses();
 
                     for(int i = 0; i < courses.size(); i++) {
@@ -759,7 +842,7 @@ public class SecreView extends JFrame {
                         courseModel.add(i, courseLabel);
                     }
 
-                    completedRequest();
+                    completedRequest(true);
 
                 }
                 else{
@@ -767,7 +850,7 @@ public class SecreView extends JFrame {
                     errorLabel2.setBounds(585,425,600,50);
                     errorLabel2.setText("No Courses Found.");
 
-                    completedRequest();
+                    completedRequest(true);
 
                 }
 
@@ -778,7 +861,7 @@ public class SecreView extends JFrame {
                     errorLabel2.setBounds(600,425,600,50);
                     errorLabel2.setText("Network Error.");
 
-                    completedRequest();
+                    completedRequest(false);
             }
         });
 
@@ -791,8 +874,6 @@ public class SecreView extends JFrame {
                 if(response.isSuccessful()) {
                     GetTeachersResponse getTeachersResponse = response.body();
 
-                    System.out.println("teacher success");
-
                     teachers = getTeachersResponse.getTeachers();
 
                     for(int i = 0; i < teachers.size(); i++) {
@@ -803,14 +884,14 @@ public class SecreView extends JFrame {
                         teacherModel.add(i, teacherLabel);
                     }
 
-                    completedRequest();
+                    completedRequest(true);
 
                 }
                 else{
                     errorLabel3.setBounds(1050,425,600,50);
                     errorLabel3.setText("No Teachers Found.");
 
-                    completedRequest();
+                    completedRequest(true);
 
                 }
 
@@ -821,7 +902,7 @@ public class SecreView extends JFrame {
                     errorLabel3.setBounds(1100,425,600,50);
                     errorLabel3.setText("Network Error.");
 
-                    completedRequest();
+                    completedRequest(false);
             }
 
 
@@ -830,22 +911,26 @@ public class SecreView extends JFrame {
 
     }
 
+    private synchronized void completedRequest(boolean flag){
+        if(flag){
+            completedRequests++;
+        }
+        else{
+            completedRequests--;
+        }
 
-
-    private synchronized void completedRequest(){
-        completedRequests++;
         if(completedRequests == 3){
             SwingUtilities.invokeLater(() -> setVisible(true));
+        }else if(completedRequests == -3){
+            JOptionPane.showMessageDialog(
+                    (JFrame) SwingUtilities.getWindowAncestor(this),
+                    "Network Error.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            System.exit(0);
         }
-    }
-
-    public static void main(String[] args) {
-        new SecreView("Secretary");
 
     }
 
 }
-
-
-
-//autaaaaaa
