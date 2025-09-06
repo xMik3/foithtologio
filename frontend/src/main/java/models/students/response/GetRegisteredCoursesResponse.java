@@ -3,13 +3,14 @@ package models.students.response;
 import models.general.ApiResponse;
 import models.students.RegisteredCourse;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GetRegisteredCoursesResponse extends ApiResponse {
 
-    private List<RegisteredCourse> courses;
+    private ArrayList<RegisteredCourse> courses;
 
-    public List<RegisteredCourse> getRegisteredCourses() {
+    public ArrayList<RegisteredCourse> getRegisteredCourses() {
         return this.courses;
     }
 

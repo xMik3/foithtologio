@@ -2,13 +2,14 @@ package models.secretary.response;
 
 import models.general.ApiResponse;
 import models.general.Teacher;
-import java.util.List;
+
+import java.util.ArrayList;
 
 public class GetTeachersResponse extends ApiResponse {
 
-    private  List<Teacher> teachers;
+    private ArrayList<Teacher> teachers;
 
-    public List<Teacher> getTeachers() {
+    public ArrayList<Teacher> getTeachers() {
         return this.teachers;
     }
 

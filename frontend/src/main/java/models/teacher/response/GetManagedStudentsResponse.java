@@ -2,13 +2,14 @@ package models.teacher.response;
 
 import models.general.ApiResponse;
 import models.teacher.ManagedStudent;
-import java.util.List;
+
+import java.util.ArrayList;
 
 public class GetManagedStudentsResponse extends ApiResponse {
 
-    private List<ManagedStudent> students;
+    private ArrayList<ManagedStudent> students;
 
-    public List<ManagedStudent> getStudents() {
+    public ArrayList<ManagedStudent> getStudents() {
         return this.students;
     }
 

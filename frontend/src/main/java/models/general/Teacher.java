@@ -6,15 +6,15 @@ public class Teacher {
     private String Name;
     private String Surname;
 
-    public String getTID() {
+    public String getID() {
         return this.ID;
     }
 
-    public String getSURNAME() {
+    public String getName() {
         return this.Name;
     }
 
-    public String getNAME() {
+    public String getSurname() {
         return this.Surname;
     }
 }

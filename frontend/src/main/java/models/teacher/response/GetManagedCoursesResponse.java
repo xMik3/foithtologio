@@ -1,16 +1,15 @@
 package models.teacher.response;
 
 import models.general.ApiResponse;
-import models.general.Course;
 import models.teacher.ManagedCourse;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class GetManagedCoursesResponse extends ApiResponse {
 
-    private List<ManagedCourse> managedCourses;
+    private ArrayList<ManagedCourse> managedCourses;
 
-    public List<ManagedCourse> getManagedCourses() {
+    public ArrayList<ManagedCourse> getManagedCourses() {
         return this.managedCourses;
     }
 

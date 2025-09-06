@@ -2,36 +2,36 @@ package models.general;
 
 public class Student {
 
-    private String SID;
-    private String NAME;
-    private String SURNAME;
-    private int SEMESTER;
-    private String PASSWORD;
-    private int AVAILCOURSES;
+    private String ID;
+    private String Name;
+    private String Surname;
+    private int Semester;
+    private int AvailableCourses;
+    private int EnrollmentYear;
 
 
-    public String getSID() {
-        return this.SID;
+    public String getID() {
+        return this.ID;
     }
 
-    public String getNAME() {
-        return this.NAME;
+    public String getName() {
+        return this.Name;
     }
 
-    public String getSURNAME() {
-        return this.SURNAME;
+    public String getSurname() {
+        return this.Surname;
     }
 
-    public int getSEMESTER() {
-        return this.SEMESTER;
+    public int getSemester() {
+        return this.Semester;
     }
 
-    public String getPASSWORD() {
-        return this.PASSWORD;
+    public int getAvailableCourses() {
+        return this.AvailableCourses;
     }
 
-    public int getAVAILCOURSES() {
-        return this.AVAILCOURSES;
+    public int getEnrollmentYear() {
+        return this.EnrollmentYear;
     }
 
 }
