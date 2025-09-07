@@ -44,7 +44,7 @@ public class addregcrs extends JFrame{
     
         public addregcrs(){
         
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         
         StudentInterface stuInterface = ApiClient.getClient().create(StudentInterface.class);
         Gson gson = new Gson();
@@ -69,7 +69,8 @@ public class addregcrs extends JFrame{
             call.enqueue(new Callback<GetAvailableCoursesResponse>() {
 
             @Override
-            public void onResponse(Call<GetAvailableCoursesResponse> call, Response<GetAvailableCoursesResponse> response) {
+            public void onResponse(Call<GetAvailableCoursesResponse> call, Response<GetAvailableCoursesResponse> response) 
+            {
                 if (response.isSuccessful()) {
                         GetAvailableCoursesResponse availResponse = response.body();
                         allAvailCrses = availResponse.getAvailableCourses();
@@ -79,12 +80,13 @@ public class addregcrs extends JFrame{
                             try {
                                  ApiResponse loginResponse = gson.fromJson(response.errorBody().string(), ApiResponse.class);
                                  errorLabel.setText("*"+ loginResponse.getMessage());
-                            } catch (IOException ex) {
+                            } catch (IOException ex) 
+                            {
                                  errorLabel.setText("*"+ex.getMessage());
-                                    }
-                                }
-
                             }
+                        }
+
+            }
 
                             @Override
                             public void onFailure(Call<GetAvailableCoursesResponse> call, Throwable t) {
