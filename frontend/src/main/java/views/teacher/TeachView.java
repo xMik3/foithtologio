@@ -66,7 +66,7 @@ public class TeachView extends JFrame {
             title2.setHorizontalAlignment(SwingConstants.CENTER);
             
             ex1 = new JPanel(new BorderLayout());
-            ex2 = new JPanel();
+            ex2 = new JPanel(new BorderLayout());
             ex3 = new JPanel();
             ex4 = new JPanel();
             ex5 = new JPanel();
@@ -138,7 +138,7 @@ public class TeachView extends JFrame {
             scrollPane2.getViewport().setOpaque(false);
             scrollPane2.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             scrollPane2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-            scrollPane2.setPreferredSize(new Dimension(400, 800));
+            scrollPane2.setPreferredSize(new Dimension(600, 800));
 
             ex2.add(scrollPane2, BorderLayout.CENTER);
 
@@ -155,6 +155,11 @@ public class TeachView extends JFrame {
             controlPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
 
             JButton gradeBtn = new JButton("Grade");
+            gradeBtn.setFont(new Font("", Font.PLAIN, 24));
+            gradeBtn.setAlignmentX(Component.CENTER_ALIGNMENT); // needed for BoxLayout
+            gradeBtn.setMaximumSize(new Dimension(Short.MAX_VALUE, 50)); // fill horizontally
+            gradeBtn.setOpaque(false);
+            gradeBtn.setBackground(new Color(0, 0, 0, 50));
 
             // Add action for Add
             gradeBtn.addActionListener(e -> {
@@ -165,6 +170,10 @@ public class TeachView extends JFrame {
 
             controlPanel.add(gradeBtn);
             ex1.add(controlPanel, BorderLayout.SOUTH);
+            
+            JPanel emptyPanel = new JPanel();
+            emptyPanel.setPreferredSize(controlPanel.getPreferredSize());
+            ex2.add(emptyPanel, BorderLayout.SOUTH);
 
 
             GridBagConstraints huh = new GridBagConstraints();
@@ -195,7 +204,7 @@ public class TeachView extends JFrame {
             gridp.add(ex1, huh);
             
             huh.gridx = 1;
-            huh.weightx = 0.25;
+            huh.weightx = 0.5;
             gridp.add(ex2, huh);
             
             huh.gridx = 2;
@@ -203,8 +212,10 @@ public class TeachView extends JFrame {
             gridp.add(ex3, huh);
             
             add(gridp);
-            setExtendedState(JFrame.MAXIMIZED_BOTH);
-            setUndecorated(true);
+            //setExtendedState(JFrame.MAXIMIZED_BOTH);
+            //setUndecorated(true);
+            setSize(1200, 800);
+            setLocationRelativeTo(null); // center on screen
             setVisible(true);
             gridp.setVisible(true);
         }
