@@ -24,6 +24,9 @@ public class EditTeacher extends JPanel {
 
     private JButton confirm;
 
+    private boolean successful = false;
+    private Teacher resTeacher;
+
     public EditTeacher(SecretaryInterface secretaryInterface, Teacher teacher) {
 
         Gson gson = new Gson();
@@ -33,6 +36,7 @@ public class EditTeacher extends JPanel {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
 
         name = new JTextField(20);
         name.setFont(new Font("Arial", Font.PLAIN, 20));
@@ -213,7 +217,6 @@ public class EditTeacher extends JPanel {
 
                     errorLabel.setText("");
 
-
                     EditTeacherRequest editRequest = new EditTeacherRequest(requestName, requestSurname,requestPassword);
                     Call<ApiResponse> call = secretaryInterface.editTeacher(ApiClient.getToken(),teacher.getID(),editRequest);
 
@@ -229,6 +232,8 @@ public class EditTeacher extends JPanel {
                                         "Success",             // dialog title
                                         JOptionPane.INFORMATION_MESSAGE // type
                                 );
+                                resTeacher = new Teacher(teacher.getID(),requestName,requestSurname);
+                                successful=true;
                                 ((JDialog) SwingUtilities.getWindowAncestor(EditTeacher.this)).dispose();
                             } else {
                                 try {
@@ -265,6 +270,14 @@ public class EditTeacher extends JPanel {
                 }
         );
 
+    }
+
+    public boolean getSuccessful(){
+        return successful;
+    }
+
+    public Teacher getResTeacher(){
+        return resTeacher;
     }
 
 }

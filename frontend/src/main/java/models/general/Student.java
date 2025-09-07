@@ -34,4 +34,13 @@ public class Student {
         return this.EnrollmentYear;
     }
 
+    public Student(String ID,String Name,String Surname,int Semester,int AvailableCourses,int EnrollmentYear) {
+        this.ID=ID;
+        this.Name=Name;
+        this.Surname=Surname;
+        this.Semester=Semester;
+        this.AvailableCourses=AvailableCourses;
+        this.EnrollmentYear=EnrollmentYear;
+    }
+
 }

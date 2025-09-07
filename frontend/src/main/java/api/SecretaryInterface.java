@@ -2,23 +2,17 @@ package api;
 
 import models.general.ApiResponse;
 import models.secretary.request.*;
-import models.secretary.response.GetCoursesResponse;
-import models.secretary.response.GetCourseResponse;
-
-import models.secretary.response.GetStudentResponse;
-import models.secretary.response.GetStudentsResponse;
-
-import models.secretary.response.GetTeachersResponse;
-import models.secretary.response.GetTeacherResponse;
+import models.secretary.response.*;
 
 
 import retrofit2.Call;
 import retrofit2.http.*;
+import views.secretary.AddTeacher;
 
 public interface SecretaryInterface {
 
     @PUT("/courses")
-    Call<ApiResponse> addCourse(@Header("Authorization") String token, @Body CreateCourseRequest request);
+    Call<AddCourseResponse> addCourse(@Header("Authorization") String token, @Body CreateCourseRequest request);
 
     @GET("/courses")
     Call<GetCoursesResponse> getCourses(@Header("Authorization") String token);
@@ -27,7 +21,7 @@ public interface SecretaryInterface {
     Call<GetCourseResponse> getCourse(@Header("Authorization") String token,@Path("courseID") String courseID);
 
     @PATCH("/courses/{courseID}")
-    Call<ApiResponse> editCourse(@Header("Authorization") String token, @Path("courseID") String courseID, EditCourseRequest request);
+    Call<ApiResponse> editCourse(@Header("Authorization") String token, @Path("courseID") String courseID,@Body EditCourseRequest request);
 
     @DELETE("/courses/{courseID}")
     Call<ApiResponse> deleteCourse(@Header("Authorization") String token, @Path("courseID") String courseID);
@@ -37,7 +31,7 @@ public interface SecretaryInterface {
 
 
     @PUT("/teachers")
-    Call<ApiResponse> addTeacher(@Header("Authorization") String token, @Body CreateTeacherRequest request);
+    Call<AddTeacherResponse> addTeacher(@Header("Authorization") String token, @Body CreateTeacherRequest request);
 
     @GET("/teachers")
     Call<GetTeachersResponse> getTeachers(@Header("Authorization") String token);
@@ -48,12 +42,12 @@ public interface SecretaryInterface {
     @PATCH("/teachers/{teacherID}")
     Call<ApiResponse> editTeacher(@Header("Authorization") String token, @Path("teacherID") String teacherID,@Body EditTeacherRequest request);
 
-    @DELETE("/teacher/{teacherID}")
+    @DELETE("/teachers/{teacherID}")
     Call<ApiResponse> deleteTeacher(@Header("Authorization") String token, @Path("teacherID") String teacherID);
 
 
     @PUT("/students")
-    Call<ApiResponse> addStudent(@Header("Authorization") String token, @Body CreateStudentRequest request);
+    Call<AddStudentResponse> addStudent(@Header("Authorization") String token, @Body CreateStudentRequest request);
 
     @GET("/students/year/{year}")
     Call<GetStudentsResponse> getStudents(@Header("Authorization") String token,@Path("year") int year);

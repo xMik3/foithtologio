@@ -99,7 +99,8 @@ public class Login extends JFrame{
 
                         if(userType=="Secretary"){
 
-                            JFrame secretaryWindow = new SecretaryView("Secretary"); // your other JFrame class
+                            JFrame secretaryWindow = new SecretaryView("Secretary");
+
                             secretaryWindow.setLocationRelativeTo(null);
                             secretaryWindow.setVisible(true);
 

@@ -15,12 +15,16 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+
 public class EditCourse extends JPanel {
 
     private JTextField name;
     private JComboBox semester;
 
     private JButton confirm;
+
+    private boolean successful = false;
+    private Course resCourse;
 
     public EditCourse(SecretaryInterface secretaryInterface, Course course) {
 
@@ -177,10 +181,9 @@ public class EditCourse extends JPanel {
                     }
 
 
-                    int requestSemester = Integer.parseInt((String) semester.getSelectedItem());
+                    int requestSemester = Integer.parseInt((String)semester.getSelectedItem());
 
                     errorLabel.setText("");
-
 
                     EditCourseRequest editRequest = new EditCourseRequest(requestName, requestSemester);
                     Call<ApiResponse> call = secretaryInterface.editCourse(ApiClient.getToken(),course.getID(),editRequest);
@@ -192,11 +195,13 @@ public class EditCourse extends JPanel {
 
                             if (response.isSuccessful()) {
                                 JOptionPane.showMessageDialog(
-                                        (JDialog) SwingUtilities.getWindowAncestor(EditCourse.this),                      // parent component, null = center of screen
+                                        (JDialog) SwingUtilities.getWindowAncestor(EditCourse.this),
                                         "Course Edited.",    // message text
                                         "Success",             // dialog title
                                         JOptionPane.INFORMATION_MESSAGE // type
                                 );
+                                resCourse = new Course(course.getID(),requestName,requestSemester, course.getTeacherName(), course.getTeacherSurname());
+                                successful = true;
                                 ((JDialog) SwingUtilities.getWindowAncestor(EditCourse.this)).dispose();
                             } else {
                                 try {
@@ -233,6 +238,14 @@ public class EditCourse extends JPanel {
                 }
         );
 
+    }
+
+    public boolean getSuccessful(){
+        return successful;
+    }
+
+    public Course getResCourse(){
+        return resCourse;
     }
 
 }

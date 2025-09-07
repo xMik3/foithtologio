@@ -17,4 +17,11 @@ public class Teacher {
     public String getSurname() {
         return this.Surname;
     }
+
+    public Teacher(String ID,String Name,String Surname){
+        this.ID=ID;
+        this.Name=Name;
+        this.Surname=Surname;
+    }
+
 }

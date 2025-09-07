@@ -7,11 +7,13 @@ import java.time.Year;
 
 
 import api.SecretaryInterface;
+import models.general.Student;
 import models.secretary.request.CreateStudentRequest;
 import models.general.ApiResponse;
 import client.ApiClient;
 
 import com.google.gson.Gson;
+import models.secretary.response.AddStudentResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -24,6 +26,10 @@ public class AddStudent extends JPanel {
     private JTextField password;
 
     private JButton confirm;
+
+
+    private Student student;
+    private boolean successful=false;
 
     public AddStudent(SecretaryInterface secretaryInterface) {
 
@@ -235,20 +241,23 @@ public class AddStudent extends JPanel {
 
 
                     CreateStudentRequest createRequest = new CreateStudentRequest(requestName, requestSurname,requestPassword,requestEnrollmentYear);
-                    Call<ApiResponse> call = secretaryInterface.addStudent(ApiClient.getToken(),createRequest);
+                    Call<AddStudentResponse> call = secretaryInterface.addStudent(ApiClient.getToken(),createRequest);
 
-                    call.enqueue(new Callback<ApiResponse>() {
+                    call.enqueue(new Callback<AddStudentResponse>() {
 
                         @Override
-                        public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                        public void onResponse(Call<AddStudentResponse> call, Response<AddStudentResponse> response) {
 
                             if (response.isSuccessful()) {
+                                String studentID = response.body().getStudentID();
                                 JOptionPane.showMessageDialog(
                                         (JDialog) SwingUtilities.getWindowAncestor(AddStudent.this),                      // parent component, null = center of screen
-                                        "Student Added.",    // message text
+                                        "Student Added With ID Of "+studentID+".",
                                         "Success",             // dialog title
                                         JOptionPane.INFORMATION_MESSAGE // type
                                 );
+                                student = new Student(studentID,requestName,requestSurname,requestEnrollmentYear,7,requestEnrollmentYear);
+                                successful=true;
                                 ((JDialog) SwingUtilities.getWindowAncestor(AddStudent.this)).dispose();
                             } else {
                                 try {
@@ -259,6 +268,7 @@ public class AddStudent extends JPanel {
                                             "Error",
                                             JOptionPane.ERROR_MESSAGE
                                     );
+                                    successful=false;
                                 } catch (IOException ex) {
                                     JOptionPane.showMessageDialog(
                                             (JDialog) SwingUtilities.getWindowAncestor(AddStudent.this),
@@ -266,25 +276,35 @@ public class AddStudent extends JPanel {
                                             "Error",
                                             JOptionPane.ERROR_MESSAGE
                                     );
+                                    successful=false;
                                 }
                             }
 
                         }
 
                         @Override
-                        public void onFailure(Call<ApiResponse> call, Throwable t) {
+                        public void onFailure(Call<AddStudentResponse> call, Throwable t) {
                             JOptionPane.showMessageDialog(
                                     (JDialog) SwingUtilities.getWindowAncestor(AddStudent.this),
                                     "Network Error.",
                                     "Error",
                                     JOptionPane.ERROR_MESSAGE
                             );
+                            successful=false;
                         }
 
                     });
                 }
         );
 
+    }
+
+    public boolean getSuccesful(){
+        return successful;
+    }
+
+    public Student getStudent(){
+        return student;
     }
 
 }

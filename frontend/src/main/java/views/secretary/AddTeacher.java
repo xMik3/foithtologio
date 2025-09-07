@@ -10,7 +10,9 @@ import models.general.ApiResponse;
 import client.ApiClient;
 
 import com.google.gson.Gson;
+import models.general.Teacher;
 import models.secretary.request.CreateTeacherRequest;
+import models.secretary.response.AddTeacherResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -22,6 +24,9 @@ public class AddTeacher extends JPanel {
     private JTextField password;
 
     private JButton confirm;
+
+    private Teacher teacher;
+    private boolean successful = false;
 
     public AddTeacher(SecretaryInterface secretaryInterface) {
 
@@ -213,20 +218,23 @@ public class AddTeacher extends JPanel {
 
 
                     CreateTeacherRequest createRequest = new CreateTeacherRequest(requestName, requestSurname,requestPassword);
-                    Call<ApiResponse> call = secretaryInterface.addTeacher(ApiClient.getToken(),createRequest);
+                    Call<AddTeacherResponse> call = secretaryInterface.addTeacher(ApiClient.getToken(),createRequest);
 
-                    call.enqueue(new Callback<ApiResponse>() {
+                    call.enqueue(new Callback<AddTeacherResponse>() {
 
                         @Override
-                        public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                        public void onResponse(Call<AddTeacherResponse> call, Response<AddTeacherResponse> response) {
 
                             if (response.isSuccessful()) {
+                                String teacherID = response.body().getTeacherID();
                                 JOptionPane.showMessageDialog(
                                         (JDialog) SwingUtilities.getWindowAncestor(AddTeacher.this),                      // parent component, null = center of screen
-                                        "Teacher Added.",    // message text
+                                        "Teacher Added With ID Of "+teacherID+".",
                                         "Success",             // dialog title
                                         JOptionPane.INFORMATION_MESSAGE // type
                                 );
+                                teacher = new Teacher(teacherID,requestName,requestSurname);
+                                successful = true;
                                 ((JDialog) SwingUtilities.getWindowAncestor(AddTeacher.this)).dispose();
                             } else {
                                 try {
@@ -250,7 +258,7 @@ public class AddTeacher extends JPanel {
                         }
 
                         @Override
-                        public void onFailure(Call<ApiResponse> call, Throwable t) {
+                        public void onFailure(Call<AddTeacherResponse> call, Throwable t) {
                             JOptionPane.showMessageDialog(
                                     (JDialog) SwingUtilities.getWindowAncestor(AddTeacher.this),
                                     "Network Error.",
@@ -263,6 +271,14 @@ public class AddTeacher extends JPanel {
                 }
         );
 
+    }
+
+    public boolean getSuccessful(){
+        return successful;
+    }
+
+    public Teacher getTeacher(){
+        return teacher;
     }
 
 }

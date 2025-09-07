@@ -27,4 +27,12 @@ public class Course {
     public String getTeacherSurname() {
         return this.TeacherSurname;
     }
+
+    public Course(String ID, String Name, int Semester, String TeacherName, String TeacherSurname) {
+        this.ID = ID;
+        this.Name = Name;
+        this.Semester = Semester;
+        this.TeacherName = TeacherName;
+        this.TeacherSurname = TeacherSurname;
+    }
 }

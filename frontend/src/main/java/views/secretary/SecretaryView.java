@@ -1,6 +1,8 @@
 package views.secretary;
 
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -26,8 +28,8 @@ import retrofit2.Response;
 
 
 public class SecretaryView extends JFrame {
-        
-    private JPanel gridp; //One big panel with customizable Grid layout
+
+    private JPanel gridp;
     private JLabel title0;
     private JLabel title1;
     private JLabel title2;
@@ -41,13 +43,21 @@ public class SecretaryView extends JFrame {
 
     private int completedRequests = 0;
 
-    private ArrayList<Student> students = new ArrayList<Student>();
-    private ArrayList<Course> courses = new ArrayList<Course>();
+    private ArrayList<Student> students = new ArrayList<>();
+    private ArrayList<Course> courses = new ArrayList<>();
     private ArrayList<Teacher> teachers = new ArrayList<>();
 
     private DefaultListModel<String> studentModel = new DefaultListModel<>();
     private DefaultListModel<String> courseModel = new DefaultListModel<>();
     private DefaultListModel<String> teacherModel = new DefaultListModel<>();
+
+    private SecretaryInterface secretaryInterface;
+
+    private JComboBox yearSelection;
+
+    private JLabel errorLabel1;
+    private JLabel errorLabel2;
+    private JLabel errorLabel3;
 
 
 
@@ -55,7 +65,6 @@ public class SecretaryView extends JFrame {
 
         super(title);
 
-        ApiClient.setToken("Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOjAsInVzZXJUeXBlIjoiU2VjcmV0YXJ5IiwiaWF0IjoxNzU3MTg3Mjk5LCJleHAiOjE3NTcxOTQ0OTl9.jgG7EJ8brlpJAJlpMskjqcCUcHdKdw8CHVpmfzDwTLM");
         Gson gson = new Gson();
 
         try {
@@ -65,24 +74,24 @@ public class SecretaryView extends JFrame {
             e.printStackTrace();
         }
 
-        SecretaryInterface secretaryInterface = ApiClient.getClient().create(SecretaryInterface.class);
+        secretaryInterface = ApiClient.getClient().create(SecretaryInterface.class);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setLayout(new BorderLayout());
 
         gridp = new JPanel();
-        gridp.setLayout(new java.awt.GridLayout(2, 3, 10, 10)); // 2 rows, 3 columns, with spacing
+        gridp.setLayout(new java.awt.GridLayout(2, 3, 10, 10));
 
-        JLabel errorLabel1 = new JLabel("");
+        errorLabel1 = new JLabel("");
         errorLabel1.setFont(new Font("Arial", Font.PLAIN, 25));
         errorLabel1.setForeground(Color.WHITE);
 
-        JLabel errorLabel2 = new JLabel("");
+        errorLabel2 = new JLabel("");
         errorLabel2.setFont(new Font("Arial", Font.PLAIN, 25));
         errorLabel2.setForeground(Color.WHITE);
 
-        JLabel errorLabel3 = new JLabel("");
+        errorLabel3 = new JLabel("");
         errorLabel3.setFont(new Font("Arial", Font.PLAIN, 25));
         errorLabel3.setForeground(Color.WHITE);
 
@@ -90,13 +99,13 @@ public class SecretaryView extends JFrame {
         title1 = new JLabel("Courses");
         title2 = new JLabel("Teachers");
 
-        title0.setFont(new Font("Consolas", Font.BOLD, 20));
+        title0.setFont(new Font("Arial", Font.PLAIN, 30));
         title0.setHorizontalAlignment(SwingConstants.CENTER);
 
-        title1.setFont(new Font("Consolas", Font.BOLD, 20));
+        title1.setFont(new Font("Arial", Font.PLAIN, 30));
         title1.setHorizontalAlignment(SwingConstants.CENTER);
 
-        title2.setFont(new Font("Consolas", Font.BOLD, 20));
+        title2.setFont(new Font("Arial", Font.PLAIN, 30));
         title2.setHorizontalAlignment(SwingConstants.CENTER);
 
         ex1 = new JPanel();
@@ -162,13 +171,29 @@ public class SecretaryView extends JFrame {
 
         // Add action for Add
         addBtn.addActionListener(e -> {
+
             JDialog popup = new JDialog(this, null, true); // modal
 
             popup.setLocationRelativeTo(this);
-            popup.add(new AddStudent(secretaryInterface));
+            AddStudent addStudent = new AddStudent(secretaryInterface);
+            popup.add(addStudent);
             popup.pack();
             popup.setResizable(false);
             popup.setVisible(true);
+
+            if(addStudent.getSuccesful()){
+
+                Student student = addStudent.getStudent();
+
+                if(student.getEnrollmentYear() == Integer.parseInt(yearSelection.getSelectedItem().toString())){
+
+                    students.add(student);
+                    studentModel.addElement(student.getID() + " - " + student.getName() + " " + student.getSurname());
+
+                }
+
+            }
+
         });
 
 
@@ -236,15 +261,26 @@ public class SecretaryView extends JFrame {
             Student student = students.get(index);
 
             popup.setLocationRelativeTo(null);
-            popup.add(new EditStudent(secretaryInterface,student));
+            EditStudent editStudent = new EditStudent(secretaryInterface,student);
+            popup.add(editStudent);
             popup.pack();
             popup.setResizable(false);
             popup.setVisible(true);
+
+            if(editStudent.getSuccessful()){
+
+                Student resStudent = editStudent.getResStudent();
+                students.set(index,resStudent);
+                studentModel.set(index,resStudent.getID() + " - " + resStudent.getName() + " " + resStudent.getSurname());
+
+            }
+
         });
 
         controlPanel.add(addBtn);
-        controlPanel.add(deleteBtn);
         controlPanel.add(editBtn);
+        controlPanel.add(deleteBtn);
+
 
 
         studentList.addListSelectionListener(e -> {
@@ -280,7 +316,7 @@ public class SecretaryView extends JFrame {
         scrollPane.setPreferredSize(new Dimension(600, 800)); // Force visible area
 
 
-        JPanel yearSelectionPanel = new JPanel(new GridLayout(1, 2, 10, 0));
+        JPanel yearSelectionPanel = new JPanel(new GridLayout(1, 1, 10, 0));
         yearSelectionPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
 
@@ -293,56 +329,61 @@ public class SecretaryView extends JFrame {
             years[currentYear - i] = Integer.toString(i);
         }
 
-        JComboBox yearSelection = new JComboBox(years);
+        yearSelection = new JComboBox(years);
         yearSelection.setFont(new Font("Arial", Font.PLAIN, 24));
 
-        JButton getStudents = new JButton("Get Students");
-        getStudents.setFont(new Font("Arial", Font.PLAIN, 24));
-        getStudents.addActionListener(e -> {
+        yearSelection.addItemListener(new ItemListener() {
 
-            Call<GetStudentsResponse> getStudentsCall = secretaryInterface.getStudents(ApiClient.getToken(),Integer.parseInt(yearSelection.getSelectedItem().toString()));
-            getStudentsCall.enqueue(new Callback<GetStudentsResponse>() {
+              @Override
+              public void itemStateChanged(ItemEvent e) {
+                  if(e.getStateChange() == ItemEvent.SELECTED) {
 
-                @Override
-                public void onResponse(Call<GetStudentsResponse> call, Response<GetStudentsResponse> response) {
+                      Call<GetStudentsResponse> getStudentsCall = secretaryInterface.getStudents(ApiClient.getToken(),Integer.parseInt(yearSelection.getSelectedItem().toString()));
+                      getStudentsCall.enqueue(new Callback<GetStudentsResponse>() {
 
-                    if(response.isSuccessful()) {
-                        errorLabel1.setText("");
+                          @Override
+                          public void onResponse(Call<GetStudentsResponse> call, Response<GetStudentsResponse> response) {
 
-                        GetStudentsResponse getStudentsResponse = response.body();
+                              if(response.isSuccessful()) {
+                                  errorLabel1.setText("");
 
-                        studentModel.clear();
+                                  GetStudentsResponse getStudentsResponse = response.body();
 
-                        students = getStudentsResponse.getStudents();
+                                  studentModel.clear();
 
-                        for(int i = 0; i < students.size(); i++) {
-                            Student student = students.get(i);
+                                  students = getStudentsResponse.getStudents();
 
-                            String studentLabel = student.getID() + " - " + student.getName() + " " + student.getSurname();
+                                  for(int i = 0; i < students.size(); i++) {
+                                      Student student = students.get(i);
 
-                            studentModel.add(i, studentLabel);
-                        }
+                                      String studentLabel = student.getID() + " - " + student.getName() + " " + student.getSurname();
 
-                    }
-                    else{
-                        errorLabel1.setBounds(125,425,600,50);
-                        errorLabel1.setText("No Students Found.");
-                    }
+                                      studentModel.add(i, studentLabel);
+                                  }
 
-                }
+                              }
+                              else{
+                                  studentModel.clear();
+                                  errorLabel1.setBounds(125,425,600,50);
+                                  errorLabel1.setText("No Students Found.");
+                              }
 
-                @Override
-                public void onFailure(Call<GetStudentsResponse> call, Throwable throwable) {
-                    errorLabel1.setBounds(150,425,600,50);
-                    errorLabel1.setText("Network Error.");
+                          }
 
-                }
-            });
+                          @Override
+                          public void onFailure(Call<GetStudentsResponse> call, Throwable throwable) {
+                              errorLabel1.setBounds(150,425,600,50);
+                              errorLabel1.setText("Network Error.");
+
+                          }
+                      });
+
+                  }
+              }
 
         });
 
         yearSelectionPanel.add(yearSelection, BorderLayout.WEST);
-        yearSelectionPanel.add(getStudents, BorderLayout.EAST);
 
 
         GridBagConstraints yearSelectionPanelConstraints = new GridBagConstraints();
@@ -421,10 +462,23 @@ public class SecretaryView extends JFrame {
             JDialog popup = new JDialog(this, null, true); // modal
 
             popup.setLocationRelativeTo(this);
-            popup.add(new AddCourse(secretaryInterface));
+
+            AddCourse addCourse = new AddCourse(secretaryInterface);
+
+            popup.add(addCourse);
             popup.pack();
             popup.setResizable(false);
             popup.setVisible(true);
+
+            if(addCourse.getSuccessful()){
+
+                Course course = addCourse.getCourse();
+
+                courses.add(course);
+                courseModel.addElement(course.getID() + " - " + course.getName());
+
+            }
+
         });
 
         // Delete last selected
@@ -492,15 +546,26 @@ public class SecretaryView extends JFrame {
             Course course = courses.get(index);
 
             popup.setLocationRelativeTo(null);
-            popup.add(new EditCourse(secretaryInterface,course));
+            EditCourse editCourse = new EditCourse(secretaryInterface,course);
+            popup.add(editCourse);
             popup.pack();
             popup.setResizable(false);
             popup.setVisible(true);
+
+            if(editCourse.getSuccessful()){
+
+                Course resCourse = editCourse.getResCourse();
+                courses.set(index,resCourse);
+                courseModel.set(index,resCourse.getID() + " - " + resCourse.getName());
+
+            }
+
         });
 
         controlPanel2.add(addBtn2);
-        controlPanel2.add(deleteBtn2);
         controlPanel2.add(editBtn2);
+        controlPanel2.add(deleteBtn2);
+
 
         courseList.addListSelectionListener(e -> {
             if (!courseList.isSelectionEmpty()) {
@@ -589,10 +654,23 @@ public class SecretaryView extends JFrame {
             JDialog popup = new JDialog(this, null, true); // modal
 
             popup.setLocationRelativeTo(this);
-            popup.add(new AddTeacher(secretaryInterface));
+
+            AddTeacher addTeacher = new AddTeacher(secretaryInterface);
+
+            popup.add(addTeacher);
             popup.pack();
             popup.setResizable(false);
             popup.setVisible(true);
+
+            if(addTeacher.getSuccessful()){
+
+                Teacher teacher = addTeacher.getTeacher();
+
+                teachers.add(teacher);
+                teacherModel.addElement(teacher.getID() + " - " + teacher.getName() + " " + teacher.getSurname());
+
+            }
+
         });
 
         // Delete last selected
@@ -621,16 +699,17 @@ public class SecretaryView extends JFrame {
                     else{
                         try {
                             ApiResponse apiResponse = gson.fromJson(response.errorBody().string(), ApiResponse.class);
+                            System.out.println(teacherID);
                             JOptionPane.showMessageDialog(
                                     null,
-                                    apiResponse.getMessage(),
+                                    "ExternalException",
                                     "Error",
                                     JOptionPane.ERROR_MESSAGE
                             );
                         } catch (IOException ex) {
                             JOptionPane.showMessageDialog(
                                     null,
-                                    ex.getMessage(),
+                                    "Internal Exception.",
                                     "Error",
                                     JOptionPane.ERROR_MESSAGE
                             );
@@ -654,21 +733,32 @@ public class SecretaryView extends JFrame {
 
         // Edit last selected
         editBtn3.addActionListener(e -> {
+
             JDialog popup = new JDialog(this, null, true); // modal
 
             int index = teacherList.getSelectedIndex();
             Teacher teacher = teachers.get(index);
 
             popup.setLocationRelativeTo(null);
-            popup.add(new EditTeacher(secretaryInterface,teacher));
+            EditTeacher editTeacher = new EditTeacher(secretaryInterface,teacher);
+            popup.add(editTeacher);
             popup.pack();
             popup.setResizable(false);
             popup.setVisible(true);
+
+            if(editTeacher.getSuccessful()){
+
+                Teacher resTeacher = editTeacher.getResTeacher();
+                teachers.set(index,resTeacher);
+                teacherModel.set(index,resTeacher.getID() + " - " + resTeacher.getName() + " " + resTeacher.getSurname());
+
+            }
+
         });
 
         controlPanel3.add(addBtn3);
-        controlPanel3.add(deleteBtn3);
         controlPanel3.add(editBtn3);
+        controlPanel3.add(deleteBtn3);
 
 
         teacherList.addListSelectionListener(e -> {
@@ -696,6 +786,28 @@ public class SecretaryView extends JFrame {
             }
         });
 
+        JPanel refreshButtonPanel = new JPanel(new GridLayout(1, 1, 10, 0));
+        refreshButtonPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+
+        JButton refreshButton = new JButton("Refresh");
+        refreshButton.setFont(new Font("", Font.PLAIN, 24));
+        refreshButton.addActionListener(e -> {
+            load();
+        });
+
+        refreshButtonPanel.add(refreshButton);
+
+
+        GridBagConstraints refreshButtonPanelConstraints = new GridBagConstraints();
+
+        refreshButtonPanelConstraints.gridx = 0;
+        refreshButtonPanelConstraints.gridy = 0;
+        refreshButtonPanelConstraints.weighty = 0;
+        refreshButtonPanelConstraints.weightx = 1;
+
+        refreshButtonPanelConstraints.fill = GridBagConstraints.BOTH;
+
+
         JScrollPane scrollPane3 = new JScrollPane(teacherList);
         scrollPane3.setOpaque(false);
         scrollPane3.getViewport().setOpaque(false);
@@ -706,7 +818,7 @@ public class SecretaryView extends JFrame {
         GridBagConstraints controlPanel3Constraints = new GridBagConstraints();
 
         controlPanel3Constraints.gridx = 0;
-        controlPanel3Constraints.gridy = 1;
+        controlPanel3Constraints.gridy = 2;
         controlPanel3Constraints.weighty = 0;
         controlPanel3Constraints.weightx = 1;
 
@@ -715,7 +827,7 @@ public class SecretaryView extends JFrame {
         GridBagConstraints scrollPane3Constraints = new GridBagConstraints();
 
         scrollPane3Constraints.gridx = 0;
-        scrollPane3Constraints.gridy = 0;
+        scrollPane3Constraints.gridy = 1;
         scrollPane3Constraints.weighty = 1;
         scrollPane3Constraints.weightx = 1;
         scrollPane3Constraints.insets = new Insets(0, 0, 10, 0);
@@ -723,6 +835,7 @@ public class SecretaryView extends JFrame {
         scrollPane3Constraints.fill = GridBagConstraints.BOTH;
 
         // Add to ex3
+        ex3.add(refreshButtonPanel, refreshButtonPanelConstraints);
         ex3.add(scrollPane3, scrollPane3Constraints);
         ex3.add(controlPanel3, controlPanel3Constraints);
 
@@ -779,7 +892,36 @@ public class SecretaryView extends JFrame {
         });
 
 
+        load();
 
+
+
+    }
+
+    private synchronized void completedRequest(boolean flag){
+        if(flag){
+            completedRequests++;
+        }
+        else{
+            completedRequests--;
+        }
+
+        if(completedRequests == 3){
+            SwingUtilities.invokeLater(() -> setVisible(true));
+            completedRequests=0;
+        }else if(completedRequests == -3){
+            JOptionPane.showMessageDialog(
+                    (JFrame) SwingUtilities.getWindowAncestor(this),
+                    "Network Error.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            System.exit(0);
+        }
+
+    }
+
+    private void load(){
         Call<GetStudentsResponse> getStudentsCall = secretaryInterface.getStudents(ApiClient.getToken(),Integer.parseInt(yearSelection.getSelectedItem().toString()));
         getStudentsCall.enqueue(new Callback<GetStudentsResponse>() {
 
@@ -788,6 +930,9 @@ public class SecretaryView extends JFrame {
 
                 if(response.isSuccessful()) {
                     GetStudentsResponse getStudentsResponse = response.body();
+
+                    errorLabel1.setText("");
+                    studentModel.clear();
 
                     students = getStudentsResponse.getStudents();
 
@@ -814,11 +959,11 @@ public class SecretaryView extends JFrame {
 
             @Override
             public void onFailure(Call<GetStudentsResponse> call, Throwable throwable) {
+                studentModel.clear();
+                errorLabel1.setBounds(150,425,600,50);
+                errorLabel1.setText("Network Error.");
 
-                    errorLabel1.setBounds(150,425,600,50);
-                    errorLabel1.setText("Network Error.");
-
-                    completedRequest(false);
+                completedRequest(false);
 
             }
         });
@@ -831,6 +976,9 @@ public class SecretaryView extends JFrame {
 
                 if(response.isSuccessful()) {
                     GetCoursesResponse getCoursesResponse = response.body();
+
+                    errorLabel2.setText("");
+                    courseModel.clear();
 
                     courses = getCoursesResponse.getCourses();
 
@@ -846,7 +994,7 @@ public class SecretaryView extends JFrame {
 
                 }
                 else{
-
+                    courseModel.clear();
                     errorLabel2.setBounds(585,425,600,50);
                     errorLabel2.setText("No Courses Found.");
 
@@ -858,10 +1006,10 @@ public class SecretaryView extends JFrame {
 
             @Override
             public void onFailure(Call<GetCoursesResponse> call, Throwable throwable) {
-                    errorLabel2.setBounds(600,425,600,50);
-                    errorLabel2.setText("Network Error.");
+                errorLabel2.setBounds(600,425,600,50);
+                errorLabel2.setText("Network Error.");
 
-                    completedRequest(false);
+                completedRequest(false);
             }
         });
 
@@ -873,6 +1021,9 @@ public class SecretaryView extends JFrame {
 
                 if(response.isSuccessful()) {
                     GetTeachersResponse getTeachersResponse = response.body();
+
+                    errorLabel3.setText("");
+                    teacherModel.clear();
 
                     teachers = getTeachersResponse.getTeachers();
 
@@ -888,6 +1039,7 @@ public class SecretaryView extends JFrame {
 
                 }
                 else{
+                    teacherModel.clear();
                     errorLabel3.setBounds(1050,425,600,50);
                     errorLabel3.setText("No Teachers Found.");
 
@@ -899,38 +1051,14 @@ public class SecretaryView extends JFrame {
 
             @Override
             public void onFailure(Call<GetTeachersResponse> call, Throwable throwable) {
-                    errorLabel3.setBounds(1100,425,600,50);
-                    errorLabel3.setText("Network Error.");
+                errorLabel3.setBounds(1100,425,600,50);
+                errorLabel3.setText("Network Error.");
 
-                    completedRequest(false);
+                completedRequest(false);
             }
 
 
         });
-
-
-    }
-
-    private synchronized void completedRequest(boolean flag){
-        if(flag){
-            completedRequests++;
-        }
-        else{
-            completedRequests--;
-        }
-
-        if(completedRequests == 3){
-            SwingUtilities.invokeLater(() -> setVisible(true));
-        }else if(completedRequests == -3){
-            JOptionPane.showMessageDialog(
-                    (JFrame) SwingUtilities.getWindowAncestor(this),
-                    "Network Error.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
-            System.exit(0);
-        }
-
     }
 
 }

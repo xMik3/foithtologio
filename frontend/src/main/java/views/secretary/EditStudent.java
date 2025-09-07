@@ -26,6 +26,9 @@ public class EditStudent extends JPanel {
 
     private JButton confirm;
 
+    private boolean successful = false;
+    private Student resStudent;
+
     public EditStudent(SecretaryInterface secretaryInterface, Student student) {
 
         Gson gson = new Gson();
@@ -241,7 +244,6 @@ public class EditStudent extends JPanel {
 
                         @Override
                         public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-
                             if (response.isSuccessful()) {
                                 JOptionPane.showMessageDialog(
                                         (JDialog) SwingUtilities.getWindowAncestor(EditStudent.this),                      // parent component, null = center of screen
@@ -249,6 +251,8 @@ public class EditStudent extends JPanel {
                                         "Success",             // dialog title
                                         JOptionPane.INFORMATION_MESSAGE // type
                                 );
+                                resStudent = new Student(student.getID(),requestName,requestSurname,student.getSemester(),student.getAvailableCourses(),student.getEnrollmentYear());
+                                successful = true;
                                 ((JDialog) SwingUtilities.getWindowAncestor(EditStudent.this)).dispose();
                             } else {
                                 try {
@@ -285,6 +289,14 @@ public class EditStudent extends JPanel {
                 }
         );
 
+    }
+
+    public boolean getSuccessful(){
+        return successful;
+    }
+
+    public Student getResStudent(){
+        return resStudent;
     }
 
 }

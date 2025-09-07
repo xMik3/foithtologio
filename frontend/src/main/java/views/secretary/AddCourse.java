@@ -9,8 +9,9 @@ import models.general.ApiResponse;
 import client.ApiClient;
 
 import com.google.gson.Gson;
+import models.general.Course;
 import models.secretary.request.CreateCourseRequest;
-import models.secretary.request.CreateTeacherRequest;
+import models.secretary.response.AddCourseResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -21,6 +22,9 @@ public class AddCourse extends JPanel {
     private JComboBox semester;
 
     private JButton confirm;
+
+    private Course course;
+    private boolean successful=false;
 
     public AddCourse(SecretaryInterface secretaryInterface) {
 
@@ -181,20 +185,23 @@ public class AddCourse extends JPanel {
 
 
                     CreateCourseRequest createRequest = new CreateCourseRequest(requestName, requestSemester);
-                    Call<ApiResponse> call = secretaryInterface.addCourse(ApiClient.getToken(), createRequest);
+                    Call<AddCourseResponse> call = secretaryInterface.addCourse(ApiClient.getToken(), createRequest);
 
-                    call.enqueue(new Callback<ApiResponse>() {
+                    call.enqueue(new Callback<AddCourseResponse>() {
 
                         @Override
-                        public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                        public void onResponse(Call<AddCourseResponse> call, Response<AddCourseResponse> response) {
 
                             if (response.isSuccessful()) {
+                                String courseID = response.body().getCourseID();
                                 JOptionPane.showMessageDialog(
                                         (JDialog) SwingUtilities.getWindowAncestor(AddCourse.this),                      // parent component, null = center of screen
-                                        "Course Added.",    // message text
+                                        "Course Added With ID Of "+courseID+".",    // message text
                                         "Success",             // dialog title
                                         JOptionPane.INFORMATION_MESSAGE // type
                                 );
+                                course = new Course(courseID,requestName,requestSemester,null,null);
+                                successful=true;
                                 ((JDialog) SwingUtilities.getWindowAncestor(AddCourse.this)).dispose();
                             } else {
                                 try {
@@ -218,7 +225,7 @@ public class AddCourse extends JPanel {
                         }
 
                         @Override
-                        public void onFailure(Call<ApiResponse> call, Throwable t) {
+                        public void onFailure(Call<AddCourseResponse> call, Throwable t) {
                             JOptionPane.showMessageDialog(
                                     (JDialog) SwingUtilities.getWindowAncestor(AddCourse.this),
                                     "Network Error.",
@@ -231,6 +238,14 @@ public class AddCourse extends JPanel {
                 }
         );
 
+    }
+
+    public boolean getSuccessful(){
+        return this.successful;
+    }
+
+    public Course getCourse(){
+        return course;
     }
 
 }
