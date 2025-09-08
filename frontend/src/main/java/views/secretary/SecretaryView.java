@@ -174,11 +174,11 @@ public class SecretaryView extends JFrame {
 
             JDialog popup = new JDialog(this, null, true); // modal
 
-            popup.setLocationRelativeTo(this);
             AddStudent addStudent = new AddStudent(secretaryInterface);
             popup.add(addStudent);
             popup.pack();
             popup.setResizable(false);
+            popup.setLocationRelativeTo(null);
             popup.setVisible(true);
 
             if(addStudent.getSuccesful()){
@@ -260,11 +260,12 @@ public class SecretaryView extends JFrame {
             int index = studentList.getSelectedIndex();
             Student student = students.get(index);
 
-            popup.setLocationRelativeTo(null);
+
             EditStudent editStudent = new EditStudent(secretaryInterface,student);
             popup.add(editStudent);
             popup.pack();
             popup.setResizable(false);
+            popup.setLocationRelativeTo(null);
             popup.setVisible(true);
 
             if(editStudent.getSuccessful()){
@@ -461,12 +462,11 @@ public class SecretaryView extends JFrame {
         addBtn2.addActionListener(e -> {
             JDialog popup = new JDialog(this, null, true); // modal
 
-            popup.setLocationRelativeTo(this);
-
             AddCourse addCourse = new AddCourse(secretaryInterface);
 
             popup.add(addCourse);
             popup.pack();
+            popup.setLocationRelativeTo(null);
             popup.setResizable(false);
             popup.setVisible(true);
 
@@ -545,10 +545,10 @@ public class SecretaryView extends JFrame {
             int index = courseList.getSelectedIndex();
             Course course = courses.get(index);
 
-            popup.setLocationRelativeTo(null);
             EditCourse editCourse = new EditCourse(secretaryInterface,course);
             popup.add(editCourse);
             popup.pack();
+            popup.setLocationRelativeTo(null);
             popup.setResizable(false);
             popup.setVisible(true);
 
@@ -653,13 +653,13 @@ public class SecretaryView extends JFrame {
         addBtn3.addActionListener(e -> {
             JDialog popup = new JDialog(this, null, true); // modal
 
-            popup.setLocationRelativeTo(this);
 
             AddTeacher addTeacher = new AddTeacher(secretaryInterface);
 
             popup.add(addTeacher);
             popup.pack();
             popup.setResizable(false);
+            popup.setLocationRelativeTo(this);
             popup.setVisible(true);
 
             if(addTeacher.getSuccessful()){
@@ -739,11 +739,11 @@ public class SecretaryView extends JFrame {
             int index = teacherList.getSelectedIndex();
             Teacher teacher = teachers.get(index);
 
-            popup.setLocationRelativeTo(null);
             EditTeacher editTeacher = new EditTeacher(secretaryInterface,teacher);
             popup.add(editTeacher);
             popup.pack();
             popup.setResizable(false);
+            popup.setLocationRelativeTo(null);
             popup.setVisible(true);
 
             if(editTeacher.getSuccessful()){
@@ -873,11 +873,12 @@ public class SecretaryView extends JFrame {
 
         add(layeredPane, BorderLayout.CENTER);
 
-
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setExtendedState(JFrame.NORMAL);
         setSize(1400,900);
-        setResizable(false);
         pack();
+        setLocationRelativeTo(null);
+        setResizable(false);
+
 
 
         addMouseListener(new MouseAdapter() {
