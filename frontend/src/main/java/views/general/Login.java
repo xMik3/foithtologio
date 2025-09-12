@@ -18,6 +18,8 @@ import com.google.gson.Gson;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import views.student.StudView;
+import views.teacher.TeachView;
 
 public class Login extends JFrame{
 
@@ -97,7 +99,7 @@ public class Login extends JFrame{
                         LoginResponse loginResponse = response.body();
                         ApiClient.setToken("Bearer " + loginResponse.getToken());
 
-                        if(userType=="Secretary"){
+                        if(userType.equals("Secretary")){
 
                             JFrame secretaryWindow = new SecretaryView("Secretary");
 
@@ -105,7 +107,22 @@ public class Login extends JFrame{
                             secretaryWindow.setVisible(true);
 
                             dispose();
+                        } else if (userType.equals("Student"))
+                        {
+                            JFrame studentWindow = new StudView("Student");
+                            
+                            studentWindow.setLocationRelativeTo(null);
+                            studentWindow.setVisible(true);
 
+                            dispose();
+                        } else if (userType.equals("Teacher"))
+                        {
+                            JFrame teacherWindow = new TeachView("Teacher");
+                            
+                            teacherWindow.setLocationRelativeTo(null);
+                            teacherWindow.setVisible(true);
+
+                            dispose();
                         }
 
                     } else {
