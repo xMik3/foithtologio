@@ -545,7 +545,7 @@ public class SecretaryView extends JFrame {
             int index = courseList.getSelectedIndex();
             Course course = courses.get(index);
 
-            EditCourse editCourse = new EditCourse(secretaryInterface,course);
+            EditCourse editCourse = new EditCourse(secretaryInterface,course,teachers);
             popup.add(editCourse);
             popup.pack();
             popup.setLocationRelativeTo(null);

@@ -5,6 +5,7 @@ public class Course {
     private String ID;
     private String Name;
     private int Semester;
+    private String TeacherID;
     private String TeacherName;
     private String TeacherSurname;
 
@@ -28,11 +29,17 @@ public class Course {
         return this.TeacherSurname;
     }
 
-    public Course(String ID, String Name, int Semester, String TeacherName, String TeacherSurname) {
+    public String getTeacherID() {
+        return this.TeacherID;
+    }
+
+    public Course(String ID, String Name, int Semester,String TeacherID, String TeacherName, String TeacherSurname) {
         this.ID = ID;
         this.Name = Name;
         this.Semester = Semester;
+        this.TeacherID = TeacherID;
         this.TeacherName = TeacherName;
         this.TeacherSurname = TeacherSurname;
     }
+
 }

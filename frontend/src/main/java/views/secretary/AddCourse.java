@@ -200,7 +200,7 @@ public class AddCourse extends JPanel {
                                         "Success",             // dialog title
                                         JOptionPane.INFORMATION_MESSAGE // type
                                 );
-                                course = new Course(courseID,requestName,requestSemester,null,null);
+                                course = new Course(courseID,requestName,requestSemester,null,null,null);
                                 successful=true;
                                 ((JDialog) SwingUtilities.getWindowAncestor(AddCourse.this)).dispose();
                             } else {
