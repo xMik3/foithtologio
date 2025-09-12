@@ -29,6 +29,7 @@ public class StudView extends JFrame{
     JPanel btnpanel2;
     JPanel panel;
     JPanel infop;
+    JPanel refreshp;
     private JLabel errorLabel;
     JLabel title1;
     JLabel title2;
@@ -43,9 +44,13 @@ public class StudView extends JFrame{
     
     JButton addcrs;
     JButton rmcrs;
+    JButton refresh;
     DefaultListModel<String> crsesName;
     JList crsesName2;
     ArrayList<RegisteredCourse> regcrses;
+    
+    private StudentInterface stuInterface;
+    private Gson gson;
     
     String toDelete;
     
@@ -53,8 +58,8 @@ public class StudView extends JFrame{
         super(title);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        StudentInterface stuInterface = ApiClient.getClient().create(StudentInterface.class);
-        Gson gson = new Gson();
+        stuInterface = ApiClient.getClient().create(StudentInterface.class);
+        gson = new Gson();
         
          try {
             UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarkLaf");
@@ -71,59 +76,45 @@ public class StudView extends JFrame{
         regcrses = new ArrayList<>();
         crsesName2.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
-        Call<GetRegisteredCoursesResponse> call = stuInterface.getRegisteredCourses(ApiClient.getToken());
-            
-            call.enqueue(new Callback<GetRegisteredCoursesResponse>() {
-
-            @Override
-            public void onResponse(Call<GetRegisteredCoursesResponse> call, Response<GetRegisteredCoursesResponse> response) {
-                if (response.isSuccessful()) {
-                        GetRegisteredCoursesResponse getcrsesResponse = response.body();
-                        
-                        regcrses = getcrsesResponse.getRegisteredCourses();
-
-                } else {
-                        errorLabel.setBounds(500,550,600,50);
-                            try {
-                                 ApiResponse loginResponse = gson.fromJson(response.errorBody().string(), ApiResponse.class);
-                                 errorLabel.setText("*"+ loginResponse.getMessage());
-                            } catch (IOException ex) {
-                                 errorLabel.setText("*"+ex.getMessage());
-                                    }
-                                }
-
-                            }
-
-                            @Override
-                            public void onFailure(Call<GetRegisteredCoursesResponse> call, Throwable t) {
-                                errorLabel.setText("*Something went wrong. Please try again.");
-                            }
-
-                        }); 
-            
-            
+        load();
+        
         panel = new JPanel(new BorderLayout());
         
         infop = new JPanel();
         infop.setLayout(new BoxLayout(infop,BoxLayout.Y_AXIS));
+        infop.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        infop.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+        infop.setBackground(new Color(80, 80, 80));
         
         bodypanel1 = new JPanel();
         bodypanel1.setLayout(new BorderLayout());
+        bodypanel1.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        bodypanel1.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         
         bodypanel2 = new JPanel();
         bodypanel2.setLayout(new BorderLayout());
+        bodypanel2.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        bodypanel2.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         
         btnpanel1 = new JPanel();
         btnpanel1.setLayout(new FlowLayout());
+        btnpanel1.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        btnpanel1.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         
         btnpanel2 = new JPanel();
         btnpanel2.setLayout(new FlowLayout());
+        btnpanel2.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        btnpanel2.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         
-        title1 = new JLabel("Courses:");
-        title1.setFont(new Font("Arial", Font.PLAIN, 25));
+        refreshp = new JPanel();
+        refreshp.setLayout(new BorderLayout());
+        refreshp.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         
-        title2 = new JLabel("Information:");
-        title2.setFont(new Font("Arial", Font.PLAIN, 25));
+        title1 = new JLabel("Courses");
+        title1.setFont(new Font("Arial", Font.PLAIN, 30));
+        
+        title2 = new JLabel("Information");
+        title2.setFont(new Font("Arial", Font.PLAIN, 30));
         
         addcrs = new JButton("Add");
         addcrs.setFont(new Font("", Font.PLAIN, 24));
@@ -138,15 +129,20 @@ public class StudView extends JFrame{
         rmcrs.setOpaque(false);
         rmcrs.setBackground(new Color(0, 0, 0, 50));
         
+        refresh = new JButton("Refresh");
+        refresh.setFont(new Font("", Font.PLAIN, 24));
+        refresh.setAlignmentX(Component.CENTER_ALIGNMENT); // needed for BoxLayout
+     
+        
         titlepanel1 = new JPanel();
-        titlepanel1.setLayout(new BorderLayout());
-        titlepanel1.add(title1,BorderLayout.CENTER);
+        titlepanel1.setLayout(new FlowLayout(FlowLayout.CENTER));
+        titlepanel1.add(title1);
         titlepanel1.setPreferredSize(new Dimension(0, 60));
         
         titlepanel2 = new JPanel();
-        titlepanel2.setLayout(new BorderLayout());
-        titlepanel2.add(title2, BorderLayout.CENTER);
-        titlepanel2.setPreferredSize(new Dimension(0, 60));
+        titlepanel2.setLayout(new FlowLayout(FlowLayout.CENTER));
+        titlepanel2.add(title2);
+        titlepanel2.setPreferredSize(new Dimension(0, 10));
         
         cid = new JLabel("Course's ID:");
         cid.setFont(new Font("Arial", Font.PLAIN, 20));
@@ -169,28 +165,20 @@ public class StudView extends JFrame{
         controlPanel.add(addcrs);
         controlPanel.add(rmcrs);
         
-        for(int i=0;i<regcrses.size();i++){
-            RegisteredCourse course = regcrses.get(i);
-            String label = course.getID();
-            String name = course.getName();
-            crsesName.add(i,label + "-" + name); 
-        }
-        
-        
         
         JPanel listPanel = new JPanel();
             listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
-            listPanel.setOpaque(false); // For transparency if desired
-
             listPanel.add(crsesName2);
-
+            listPanel.setBackground(new Color(80, 80, 80));
+            listPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            
             // Put listPanel inside a scroll pane
             JScrollPane scrollPane = new JScrollPane(listPanel);
             scrollPane.setOpaque(false);
             scrollPane.getViewport().setOpaque(false);
-            scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-            scrollPane.setPreferredSize(new Dimension(200, 400)); // Force visible area
+            scrollPane.setBackground(new Color(80, 80, 80));
+            scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             
             addcrs.addActionListener
                 (
@@ -214,7 +202,11 @@ public class StudView extends JFrame{
             public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
                 if (response.isSuccessful()) {
                         ApiResponse delResponse = response.body();
-
+                            SwingUtilities.invokeLater(() -> {
+                            crsesName.remove(curind);
+                            regcrses.remove(curind); 
+                            });
+                            
                 } else {
                         errorLabel.setBounds(500,550,600,50);
                             try {
@@ -252,6 +244,15 @@ public class StudView extends JFrame{
                     }
                 );
             
+            refresh.addActionListener
+                (
+                    l -> 
+                    {
+                      load();
+                    }
+                );
+            
+
             infop.add(nm);
             infop.add(Box.createRigidArea(new Dimension(0, 20)));
             infop.add(cid);
@@ -260,10 +261,12 @@ public class StudView extends JFrame{
             infop.add(Box.createRigidArea(new Dimension(0, 20)));
             infop.add(tname);
             
+            refreshp.add(refresh,BorderLayout.CENTER);
             
             bodypanel1.add(scrollPane, BorderLayout.CENTER);
             bodypanel2.add(controlPanel, BorderLayout.SOUTH);
-            bodypanel2.add(infop, BorderLayout.NORTH);
+            bodypanel2.add(infop, BorderLayout.CENTER);
+            bodypanel2.add(refreshp, BorderLayout.NORTH);
             
             // row 1: titles
             JPanel titleRow = new JPanel(new GridLayout(1, 2));
@@ -288,6 +291,46 @@ public class StudView extends JFrame{
             add(panel);
             
 }
+        public void load(){
+            
+            Call<GetRegisteredCoursesResponse> call = stuInterface.getRegisteredCourses(ApiClient.getToken());
+            
+            call.enqueue(new Callback<GetRegisteredCoursesResponse>() {
+
+            @Override
+            public void onResponse(Call<GetRegisteredCoursesResponse> call, Response<GetRegisteredCoursesResponse> response) {
+                if (response.isSuccessful()) {
+                        GetRegisteredCoursesResponse getcrsesResponse = response.body();
+                        
+                        regcrses = getcrsesResponse.getRegisteredCourses();
+
+                } else {
+                        errorLabel.setBounds(500,550,600,50);
+                            try {
+                                 ApiResponse loginResponse = gson.fromJson(response.errorBody().string(), ApiResponse.class);
+                                 errorLabel.setText("*"+ loginResponse.getMessage());
+                            } catch (IOException ex) {
+                                 errorLabel.setText("*"+ex.getMessage());
+                                    }
+                                }
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<GetRegisteredCoursesResponse> call, Throwable t) {
+                                errorLabel.setText("*Something went wrong. Please try again.");
+                            }
+
+                        });
+            
+            for(int i=0;i<regcrses.size();i++){
+            RegisteredCourse course = regcrses.get(i);
+            String label = course.getID();
+            String name = course.getName();
+            crsesName.add(i,label + "-" + name); 
+        }
+            
+        }
         public static void main(String[] args) {
         new StudView("bruh");
         
