@@ -31,6 +31,7 @@ public class addregcrs extends JFrame{
     ArrayList<AvailableCourse> allAvailCrses;
     ArrayList<String> toreg;
     
+    private StudView studentview;
     
     JPanel titlep;
     JPanel bodyp;
@@ -42,7 +43,9 @@ public class addregcrs extends JFrame{
     private JLabel errorLabel;
     
     
-        public addregcrs(){
+        public addregcrs(StudView studentview){
+        
+        this.studentview = studentview;
         
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         
@@ -159,6 +162,9 @@ public class addregcrs extends JFrame{
             public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
                 if (response.isSuccessful()) {
                         ApiResponse regResponse = response.body();
+                        
+                        studentview.registerCourse(toreg);
+
 
                 } else {
                         errorLabel.setBounds(500,550,600,50);
@@ -185,7 +191,5 @@ public class addregcrs extends JFrame{
          
         
     }
-        public static void main(String[] args){
-            new addregcrs();
-        }
+       
 }
