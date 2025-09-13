@@ -184,7 +184,7 @@ public class StudView extends JFrame{
                 (
                     l -> 
                     {
-                      new addregcrs();
+                      new addregcrs(this);
                     }
                 );
             
@@ -331,6 +331,17 @@ public class StudView extends JFrame{
         }
             
         }
+        
+        public void registerCourse(ArrayList<String> toreg){
+            SwingUtilities.invokeLater(() -> {
+            
+            for(String course:toreg){
+                crsesName.addElement(course);
+            }
+            
+            });
+        }
+        
         public static void main(String[] args) {
         new StudView("bruh");
         
