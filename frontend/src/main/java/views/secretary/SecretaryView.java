@@ -462,7 +462,7 @@ public class SecretaryView extends JFrame {
         addBtn2.addActionListener(e -> {
             JDialog popup = new JDialog(this, null, true); // modal
 
-            AddCourse addCourse = new AddCourse(secretaryInterface);
+            AddCourse addCourse = new AddCourse(secretaryInterface,teachers);
 
             popup.add(addCourse);
             popup.pack();

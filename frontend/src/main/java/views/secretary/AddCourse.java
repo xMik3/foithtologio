@@ -3,6 +3,7 @@ package views.secretary;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import api.SecretaryInterface;
 import models.general.ApiResponse;
@@ -10,6 +11,7 @@ import client.ApiClient;
 
 import com.google.gson.Gson;
 import models.general.Course;
+import models.general.Teacher;
 import models.secretary.request.CreateCourseRequest;
 import models.secretary.response.AddCourseResponse;
 import retrofit2.Call;
@@ -20,13 +22,14 @@ public class AddCourse extends JPanel {
 
     private JTextField name;
     private JComboBox semester;
+    private JComboBox teacherList;
 
     private JButton confirm;
 
     private Course course;
     private boolean successful=false;
 
-    public AddCourse(SecretaryInterface secretaryInterface) {
+    public AddCourse(SecretaryInterface secretaryInterface,ArrayList<Teacher> teachers) {
 
         Gson gson = new Gson();
 
@@ -43,12 +46,27 @@ public class AddCourse extends JPanel {
         semester = new JComboBox(semesters);
         semester.setFont(new Font("Arial", Font.PLAIN, 20));
 
+        ArrayList<String> teacherNames = new ArrayList<>();
+        teacherNames.add("None");
+        for(int i=0;i<teachers.size();i++){
+            Teacher teacher = teachers.get(i);
+            teacherNames.add(teacher.getID() + " - " + teacher.getName() + " " + teachers.get(i).getSurname());
+        }
+
+        teacherList = new JComboBox(teacherNames.toArray());
+        teacherList.setFont(new Font("Arial", Font.PLAIN, 20));
+        teacherList.setSelectedIndex(0);
+
         JLabel addCourseLabel = new JLabel("Add Course");
         addCourseLabel.setFont(new Font("Arial", Font.PLAIN, 34));
 
         JLabel nameLabel = new JLabel("Name : ");
         nameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         nameLabel.setFont(new Font("Arial", Font.PLAIN, 24));
+
+        JLabel assignTeacherLabel = new JLabel("Assign Teacher : ");
+        assignTeacherLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        assignTeacherLabel.setFont(new Font("Arial", Font.PLAIN, 24));
 
         JLabel semesterLabel = new JLabel("Semester : ");
         semesterLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -85,6 +103,7 @@ public class AddCourse extends JPanel {
         JPanel middleLeftPanel = new JPanel(new GridLayout(3,1,0,20));
 
         middleLeftPanel.add(nameLabel);
+        middleLeftPanel.add(assignTeacherLabel);
         middleLeftPanel.add(semesterLabel);
 
         GridBagConstraints middleLeftPanelConstraints = new GridBagConstraints();
@@ -103,6 +122,8 @@ public class AddCourse extends JPanel {
         JPanel middleRightPanel = new JPanel(new GridLayout(3,1,0,20));
 
         middleRightPanel.add(name);
+        middleRightPanel.add(teacherList);
+
         middleRightPanel.add(semester);
 
         GridBagConstraints middleRightPanelConstraints = new GridBagConstraints();
@@ -166,79 +187,96 @@ public class AddCourse extends JPanel {
 
         confirm.addActionListener(l -> {
 
-                    String requestName = name.getText();
-                    if(requestName.length()<4){
-                        errorLabel.setBounds(120,320,800,50);
-                        errorLabel.setText("Course's name can not be less than four characters.");
-                        return;
-                    }
-                    else if(requestName.length()>30){
-                        errorLabel.setBounds(120,320,800,50);
-                        errorLabel.setText("Course's name can not be more than thirty characters.");
-                        return;
-                    }
+            String requestName = name.getText();
+            if(requestName.length()<4){
+                errorLabel.setBounds(120,320,800,50);
+                errorLabel.setText("Course's name can not be less than four characters.");
+                return;
+            }
+            else if(requestName.length()>30){
+                errorLabel.setBounds(120,320,800,50);
+                errorLabel.setText("Course's name can not be more than thirty characters.");
+                return;
+            }
+
+            int teacherIndex = teacherList.getSelectedIndex();
+            String teacherID;
+            String teacherName;
+            String teacherSurname;
+
+            if(teacherIndex==0){
+                teacherID = "NULL";
+                teacherName = null;
+                teacherSurname = null;
+            }
+            else{
+                Teacher teacher = teachers.get(teacherIndex-1);
+                teacherID = teacher.getID();
+                teacherName = teacher.getName();
+                teacherSurname = teacher.getSurname();
+            }
 
 
-                    int requestSemester = Integer.parseInt((String) semester.getSelectedItem());
+            int requestSemester = Integer.parseInt((String) semester.getSelectedItem());
 
-                    errorLabel.setText("");
+            errorLabel.setText("");
 
 
-                    CreateCourseRequest createRequest = new CreateCourseRequest(requestName, requestSemester);
-                    Call<AddCourseResponse> call = secretaryInterface.addCourse(ApiClient.getToken(), createRequest);
+            CreateCourseRequest createRequest = new CreateCourseRequest(requestName, requestSemester,teacherID);
+            Call<AddCourseResponse> call = secretaryInterface.addCourse(ApiClient.getToken(), createRequest);
 
-                    call.enqueue(new Callback<AddCourseResponse>() {
+            call.enqueue(new Callback<AddCourseResponse>() {
 
-                        @Override
-                        public void onResponse(Call<AddCourseResponse> call, Response<AddCourseResponse> response) {
+                @Override
+                public void onResponse(Call<AddCourseResponse> call, Response<AddCourseResponse> response) {
 
-                            if (response.isSuccessful()) {
-                                String courseID = response.body().getCourseID();
-                                JOptionPane.showMessageDialog(
-                                        (JDialog) SwingUtilities.getWindowAncestor(AddCourse.this),                      // parent component, null = center of screen
-                                        "Course Added With ID Of "+courseID+".",    // message text
-                                        "Success",             // dialog title
-                                        JOptionPane.INFORMATION_MESSAGE // type
-                                );
-                                course = new Course(courseID,requestName,requestSemester,null,null,null);
-                                successful=true;
-                                ((JDialog) SwingUtilities.getWindowAncestor(AddCourse.this)).dispose();
-                            } else {
-                                try {
-                                    ApiResponse apiResponse = gson.fromJson(response.errorBody().string(), ApiResponse.class);
-                                    JOptionPane.showMessageDialog(
-                                            (JDialog) SwingUtilities.getWindowAncestor(AddCourse.this),
-                                            apiResponse.getMessage(),
-                                            "Error",
-                                            JOptionPane.ERROR_MESSAGE
-                                    );
-                                } catch (IOException ex) {
-                                    JOptionPane.showMessageDialog(
-                                            (JDialog) SwingUtilities.getWindowAncestor(AddCourse.this),
-                                            ex.getMessage(),
-                                            "Error",
-                                            JOptionPane.ERROR_MESSAGE
-                                    );
-                                }
-                            }
-
-                        }
-
-                        @Override
-                        public void onFailure(Call<AddCourseResponse> call, Throwable t) {
+                    if (response.isSuccessful()) {
+                        String courseID = response.body().getCourseID();
+                        JOptionPane.showMessageDialog(
+                                (JDialog) SwingUtilities.getWindowAncestor(AddCourse.this),                      // parent component, null = center of screen
+                                "Course Added With ID Of "+courseID+".",    // message text
+                                "Success",             // dialog title
+                                JOptionPane.INFORMATION_MESSAGE // type
+                        );
+                        course = new Course(courseID,requestName,requestSemester,teacherID,teacherName,teacherSurname);
+                        successful=true;
+                        ((JDialog) SwingUtilities.getWindowAncestor(AddCourse.this)).dispose();
+                    } else {
+                        try {
+                            ApiResponse apiResponse = gson.fromJson(response.errorBody().string(), ApiResponse.class);
                             JOptionPane.showMessageDialog(
                                     (JDialog) SwingUtilities.getWindowAncestor(AddCourse.this),
-                                    "Network Error.",
+                                    apiResponse.getMessage(),
+                                    "Error",
+                                    JOptionPane.ERROR_MESSAGE
+                            );
+                        } catch (IOException ex) {
+                            JOptionPane.showMessageDialog(
+                                    (JDialog) SwingUtilities.getWindowAncestor(AddCourse.this),
+                                    ex.getMessage(),
                                     "Error",
                                     JOptionPane.ERROR_MESSAGE
                             );
                         }
+                    }
 
-                    });
                 }
-        );
 
-    }
+                @Override
+                public void onFailure(Call<AddCourseResponse> call, Throwable t) {
+                    JOptionPane.showMessageDialog(
+                            (JDialog) SwingUtilities.getWindowAncestor(AddCourse.this),
+                            "Network Error.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                }
+
+            });
+        }
+    );
+
+}
 
     public boolean getSuccessful(){
         return this.successful;

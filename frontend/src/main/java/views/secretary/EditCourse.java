@@ -89,9 +89,6 @@ public class EditCourse extends JPanel {
         confirm = new JButton("Confirm");
         confirm.setFont(new Font("Arial", Font.PLAIN, 24));
 
-        JButton assignTeacher = new JButton("Assign");
-        assignTeacher.setFont(new Font("Arial", Font.PLAIN, 24));
-
 
         JPanel mainPanel = new JPanel(new GridBagLayout());
 
@@ -139,13 +136,9 @@ public class EditCourse extends JPanel {
 
         JPanel middleRightPanel = new JPanel(new GridLayout(3,1,0,20));
 
-        JPanel assignTeacherPanel = new JPanel(new GridLayout(1,2,20,0));
-        assignTeacherPanel.add(teacherList);
-        assignTeacherPanel.add(assignTeacher);
-
 
         middleRightPanel.add(name);
-        middleRightPanel.add(assignTeacherPanel);
+        middleRightPanel.add(teacherList);
         middleRightPanel.add(semester);
 
 
@@ -192,7 +185,7 @@ public class EditCourse extends JPanel {
 
         mainPanel.add(lowerPanel, lowerPanelConstraints);
         mainPanel.setBorder(BorderFactory.createEmptyBorder(30,40,80,60));
-        mainPanel.setBounds(0,0,1100,400);
+        mainPanel.setBounds(0,0,800,400);
 
         JLabel errorLabel = new JLabel("");
         errorLabel.setFont(new Font("Arial", Font.PLAIN, 24));
@@ -200,15 +193,27 @@ public class EditCourse extends JPanel {
 
 
         JLayeredPane layeredPane = new JLayeredPane();
-        layeredPane.setBounds(0,0,1100,400);
+        layeredPane.setBounds(0,0,800,400);
         layeredPane.add(mainPanel,JLayeredPane.DEFAULT_LAYER);
         layeredPane.add(errorLabel,JLayeredPane.PALETTE_LAYER);
 
         setLayout(null);
-        setPreferredSize(new Dimension(1100, 400));
+        setPreferredSize(new Dimension(800, 400));
         add(layeredPane);
 
-        assignTeacher.addActionListener(l -> {
+        confirm.addActionListener(l -> {
+
+            String requestName = name.getText();
+            if(requestName.length()<4){
+                errorLabel.setBounds(120,320,800,50);
+                errorLabel.setText("Course's name can not be less than four characters.");
+                return;
+            }
+            else if(requestName.length()>30){
+                errorLabel.setBounds(120,320,800,50);
+                errorLabel.setText("Course's name can not be more than thirty characters.");
+                return;
+            }
 
             int teacherIndex = teacherList.getSelectedIndex();
             String teacherID;
@@ -227,77 +232,12 @@ public class EditCourse extends JPanel {
                 teacherSurname = teacher.getSurname();
             }
 
-            Call<ApiResponse>  call = secretaryInterface.assignTeacher(ApiClient.getToken(),course.getID(),teacherID);
-            call.enqueue(new Callback<ApiResponse>() {
-
-                @Override
-                public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-
-                    if(response.isSuccessful()){
-                        JOptionPane.showMessageDialog(
-                                (JDialog) SwingUtilities.getWindowAncestor(EditCourse.this),
-                                response.body().getMessage(),
-                                "Success",
-                                JOptionPane.INFORMATION_MESSAGE
-                        );
-                        resCourse = new Course(course.getID(),course.getName(),course.getSemester(),teacherID, teacherName, teacherSurname);
-                        successful = true;
-                        ((JDialog) SwingUtilities.getWindowAncestor(EditCourse.this)).dispose();
-                    }
-                    else{
-                        try {
-                            ApiResponse apiResponse = gson.fromJson(response.errorBody().string(), ApiResponse.class);
-                            JOptionPane.showMessageDialog(
-                                    (JDialog) SwingUtilities.getWindowAncestor(EditCourse.this),
-                                    apiResponse.getMessage(),
-                                    "Error",
-                                    JOptionPane.ERROR_MESSAGE
-                            );
-                        } catch (IOException ex) {
-                            JOptionPane.showMessageDialog(
-                                    (JDialog) SwingUtilities.getWindowAncestor(EditCourse.this),
-                                    ex.getMessage(),
-                                    "Error",
-                                    JOptionPane.ERROR_MESSAGE
-                            );
-                        }
-                    }
-
-                }
-
-                @Override
-                public void onFailure(Call<ApiResponse> call, Throwable throwable) {
-                    JOptionPane.showMessageDialog(
-                            (JDialog) SwingUtilities.getWindowAncestor(EditCourse.this),
-                            "Network Error.",
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE
-                    );
-                }
-            });
-
-        });
-
-        confirm.addActionListener(l -> {
-
-            String requestName = name.getText();
-            if(requestName.length()<4){
-                errorLabel.setBounds(120,320,800,50);
-                errorLabel.setText("Course's name can not be less than four characters.");
-                return;
-            }
-            else if(requestName.length()>30){
-                errorLabel.setBounds(120,320,800,50);
-                errorLabel.setText("Course's name can not be more than thirty characters.");
-                return;
-            }
-
 
             int requestSemester = Integer.parseInt((String)semester.getSelectedItem());
 
             errorLabel.setText("");
 
-            EditCourseRequest editRequest = new EditCourseRequest(requestName, requestSemester);
+            EditCourseRequest editRequest = new EditCourseRequest(requestName, requestSemester,teacherID);
             Call<ApiResponse> call = secretaryInterface.editCourse(ApiClient.getToken(),course.getID(),editRequest);
 
             call.enqueue(new Callback<ApiResponse>() {
@@ -312,7 +252,7 @@ public class EditCourse extends JPanel {
                                 "Success",             // dialog title
                                 JOptionPane.INFORMATION_MESSAGE // type
                         );
-                        resCourse = new Course(course.getID(),requestName,requestSemester,course.getTeacherID(), course.getTeacherName(), course.getTeacherSurname());
+                        resCourse = new Course(course.getID(),requestName,requestSemester,teacherID, teacherName, teacherSurname);
                         successful = true;
                         ((JDialog) SwingUtilities.getWindowAncestor(EditCourse.this)).dispose();
                     } else {

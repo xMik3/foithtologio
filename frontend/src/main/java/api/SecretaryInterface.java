@@ -26,9 +26,6 @@ public interface SecretaryInterface {
     @DELETE("/courses/{courseID}")
     Call<ApiResponse> deleteCourse(@Header("Authorization") String token, @Path("courseID") String courseID);
 
-    @PUT("/courses/{courseID}/{teacherID}")
-    Call<ApiResponse> assignTeacher(@Header("Authorization") String token, @Path("courseID") String courseID, @Path("teacherID") String teacherID);
-
 
     @PUT("/teachers")
     Call<AddTeacherResponse> addTeacher(@Header("Authorization") String token, @Body CreateTeacherRequest request);
