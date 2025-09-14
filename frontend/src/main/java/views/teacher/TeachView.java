@@ -1,5 +1,8 @@
 package views.teacher;
 
+import api.TeacherInterface;
+import client.ApiClient;
+import com.google.gson.Gson;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -7,33 +10,75 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
+import models.general.ApiResponse;
+import models.general.Course;
+import models.teacher.ManagedCourse;
+import models.teacher.ManagedStudent;
+import models.teacher.response.GetManagedCoursesResponse;
+import models.teacher.response.GetManagedStudentsResponse;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class TeachView extends JFrame {
         
-        private JPanel gridp; 
+         
         private JLabel title0;
         private JLabel title1;
         private JLabel title2;
-        private JPanel ex1;
-        private JPanel ex2;
-        private JPanel ex3;
-        private JPanel ex4;
-        private JPanel ex5;
-        private JPanel ex6;
-        private JTextArea description;
+        JLabel uname;
+        JLabel usurname;
+        JLabel smstr;
+        JLabel nm;
+        JLabel id;
+        JLabel errorLabel;
+        
+        private JPanel p;
+        private JPanel titleRow;
+        private JPanel titlep1;
+        private JPanel titlep2;
+        private JPanel titlep3;
+        
+        private JPanel bodyRow;
+        private JPanel bodyp1;
+        private JPanel bodyp2;
+        private JPanel bodyp3;
+        
+        private JPanel refreshp;
+        private JPanel gradep;
+        private JPanel infop;
+        
+        private JButton refresh;
+        private JButton grade;
+        
+        DefaultListModel<String> crsesName;
+        JList crsesName2;
+        ArrayList<ManagedCourse> crses;
+        
+        DefaultListModel<String> stuName;
+        JList stuName2;
+        ArrayList<ManagedStudent> stu;
+        TeacherInterface teacherInterface;
+        Gson gson;
 
         public TeachView(String title)
         {
@@ -47,178 +92,219 @@ public class TeachView extends JFrame {
             }
 
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+             teacherInterface = ApiClient.getClient().create(TeacherInterface.class);
             setLayout(new BorderLayout());
+            errorLabel = new JLabel();
+            gson = new Gson();
             
-            gridp = new JPanel();
-            gridp.setLayout(new GridBagLayout());
+            crses = new ArrayList<>();
+            crsesName = new DefaultListModel<>();
+            crsesName2 = new JList(crsesName);
+            crsesName2.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            
+            stu = new ArrayList<>();
+            stuName = new DefaultListModel<>();
+            stuName2 = new JList(crsesName);
+            stuName2.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            
+            p = new JPanel();
+            p.setLayout(new BorderLayout());
             
             title0 = new JLabel("Students");
             title1 = new JLabel("Courses");
             title2 = new JLabel("Description");
             
-            title0.setFont(new Font("Consolas", Font.BOLD, 20));
-            title0.setHorizontalAlignment(SwingConstants.CENTER);
-
-            title1.setFont(new Font("Consolas", Font.BOLD, 20));
-            title1.setHorizontalAlignment(SwingConstants.CENTER);
-
-            title2.setFont(new Font("Consolas", Font.BOLD, 20));
-            title2.setHorizontalAlignment(SwingConstants.CENTER);
+            title0.setFont(new Font("Arial", Font.PLAIN, 30));
+            title1.setFont(new Font("Arial", Font.PLAIN, 30));
+            title2.setFont(new Font("Arial", Font.PLAIN, 30));
             
-            ex1 = new JPanel(new BorderLayout());
-            ex2 = new JPanel(new BorderLayout());
-            ex3 = new JPanel();
-            ex4 = new JPanel();
-            ex5 = new JPanel();
-            ex6 = new JPanel();
-            ex4.setBackground(Color.GRAY);
-            ex5.setBackground(Color.GRAY);
-            ex6.setBackground(Color.GRAY);
-
-            ex4.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
-            ex5.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
-            ex6.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
-
-
-
-            JPanel listPanel = new JPanel();
-            listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
-            listPanel.setOpaque(false);
-
-            for (int i = 1; i <= 30; i++) {
-                JButton button = new JButton("Student ID" + (1000 + i));
-                button.setFont(new Font("Arial", Font.PLAIN, 24));
-                button.setForeground(Color.LIGHT_GRAY); // Use white if dark background
-                button.setAlignmentX(Component.LEFT_ALIGNMENT);
-                button.setHorizontalAlignment(SwingConstants.LEFT);
-                button.setHorizontalTextPosition(SwingConstants.LEFT);
-                int buttonHeight = 40; // or any value you like
-                button.setPreferredSize(new Dimension(0, buttonHeight));
-                button.setMaximumSize(new Dimension(Integer.MAX_VALUE, buttonHeight));
-                button.setMinimumSize(new Dimension(0, buttonHeight));
-                button.addActionListener(
-                    l -> description.append(button.getText() + "\n")
-                );
-                listPanel.add(button);
-            }
-
-            JScrollPane scrollPane = new JScrollPane(listPanel);
+            titleRow = new JPanel(new GridLayout(1,3));
+            
+            bodyRow = new JPanel(new GridLayout(1,3));
+            
+            titlep1 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            titlep1.setBackground(new Color(80, 80, 80));
+            titlep1.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+            
+            titlep2 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            titlep2.setBackground(new Color(80, 80, 80));
+            titlep2.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+            
+            titlep3 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            titlep3.setBackground(new Color(80, 80, 80));
+            titlep3.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+            
+            bodyp1 = new JPanel(new BorderLayout());
+            bodyp1.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            bodyp1.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+            
+            bodyp2 = new JPanel(new BorderLayout());
+            bodyp2.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            bodyp2.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+            
+            bodyp3 = new JPanel(new BorderLayout());
+            bodyp3.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            bodyp3.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+            
+            refreshp = new JPanel(new BorderLayout());
+            refreshp.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+            
+            gradep = new JPanel(new BorderLayout());
+            gradep.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+            
+            infop = new JPanel();
+            infop.setLayout(new BoxLayout(infop,BoxLayout.Y_AXIS));
+            infop.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            infop.setBackground(new Color(80, 80, 80));
+            
+            grade = new JButton("Grade");
+            grade.setFont(new Font("", Font.PLAIN, 24));
+            
+            refresh = new JButton("Refresh");
+            refresh.setFont(new Font("", Font.PLAIN, 24));
+            
+            nm = new JLabel("1323");
+            nm.setFont(new Font("Arial", Font.PLAIN, 20));
+            
+            id = new JLabel("322332");
+            id.setFont(new Font("Arial", Font.PLAIN, 20));
+            
+            uname = new JLabel("2343423");
+            uname.setFont(new Font("Arial", Font.PLAIN, 20));
+            
+            usurname = new JLabel("4232343");
+            usurname.setFont(new Font("Arial", Font.PLAIN, 20));
+            
+            smstr = new JLabel("2434343");
+            smstr.setFont(new Font("Arial", Font.PLAIN, 20));
+            
+            JPanel listPanel1 = new JPanel();
+            listPanel1.setLayout(new BoxLayout(listPanel1, BoxLayout.Y_AXIS));
+            listPanel1.add(crsesName2);
+            listPanel1.setBackground(new Color(80, 80, 80));
+            listPanel1.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            
+            // Put listPanel inside a scroll pane
+            JScrollPane scrollPane = new JScrollPane(listPanel1);
             scrollPane.setOpaque(false);
             scrollPane.getViewport().setOpaque(false);
-            scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-            scrollPane.setPreferredSize(new Dimension(600, 800));
+            scrollPane.setBackground(new Color(80, 80, 80));
+            scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-            ex1.add(scrollPane, BorderLayout.CENTER);
 
-
+            
+            
+            
             JPanel listPanel2 = new JPanel();
             listPanel2.setLayout(new BoxLayout(listPanel2, BoxLayout.Y_AXIS));
-            listPanel2.setOpaque(false);
-
-            for (int i = 1; i <= 30; i++) {
-                JButton button = new JButton("Course ID " + (6000 + i));
-                button.setFont(new Font("Arial", Font.PLAIN, 24));
-                button.setForeground(Color.LIGHT_GRAY); // Use white if dark background
-                button.setAlignmentX(Component.LEFT_ALIGNMENT);
-                button.setHorizontalAlignment(SwingConstants.LEFT);
-                button.setHorizontalTextPosition(SwingConstants.LEFT);
-                int buttonHeight = 40; // or any value you like
-                button.setPreferredSize(new Dimension(0, buttonHeight));
-                button.setMaximumSize(new Dimension(Integer.MAX_VALUE, buttonHeight));
-                button.setMinimumSize(new Dimension(0, buttonHeight));
-                button.addActionListener(
-                    l -> description.append(button.getText() + "\n")
-                );
-                listPanel2.add(button);
-            }
+            listPanel2.add(stuName2);
+            listPanel2.setBackground(new Color(80, 80, 80));
+            listPanel2.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
             JScrollPane scrollPane2 = new JScrollPane(listPanel2);
             scrollPane2.setOpaque(false);
             scrollPane2.getViewport().setOpaque(false);
-            scrollPane2.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             scrollPane2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-            scrollPane2.setPreferredSize(new Dimension(600, 800));
-
-            ex2.add(scrollPane2, BorderLayout.CENTER);
-
-
-            description = new JTextArea(45, 55);
-            description.setFont(new Font("Consolas", Font.PLAIN, 16));
-            description.setText("");
-            description.setEditable(false);
-            JScrollPane textScroll = new JScrollPane(description);
-            ex3.add(textScroll, BorderLayout.CENTER); 
+            scrollPane2.setBackground(new Color(80, 80, 80));
+            scrollPane2.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             
-
-            JPanel controlPanel = new JPanel();
-            controlPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
-
-            JButton gradeBtn = new JButton("Grade");
-            gradeBtn.setFont(new Font("", Font.PLAIN, 24));
-            gradeBtn.setAlignmentX(Component.CENTER_ALIGNMENT); // needed for BoxLayout
-            gradeBtn.setMaximumSize(new Dimension(Short.MAX_VALUE, 50)); // fill horizontally
-            gradeBtn.setOpaque(false);
-            gradeBtn.setBackground(new Color(0, 0, 0, 50));
-
-            // Add action for Add
-            gradeBtn.addActionListener(e -> {
-                String grade = JOptionPane.showInputDialog(this, "Enter new grade text:");
-                
-                
-            });
-
-            controlPanel.add(gradeBtn);
-            ex1.add(controlPanel, BorderLayout.SOUTH);
+            titlep1.add(title0);
+            titlep2.add(title1);
+            titlep3.add(title2);
             
-            JPanel emptyPanel = new JPanel();
-            emptyPanel.setPreferredSize(controlPanel.getPreferredSize());
-            ex2.add(emptyPanel, BorderLayout.SOUTH);
-
-
-            GridBagConstraints huh = new GridBagConstraints();
-            huh.fill = GridBagConstraints.BOTH;
-            huh.weightx = 1.0;
-            huh.gridx = 0;
-            huh.gridy = 0;
+            titleRow.add(titlep1);
+            titleRow.add(titlep2);
+            titleRow.add(titlep3);
             
-            huh.weightx = 0.5;
-            huh.weighty = 0.15;
-            gridp.add(title0, huh);
-            gridp.add(ex4, huh);
+            refreshp.add(refresh);
+            gradep.add(grade);
             
-            huh.gridx = 1;
-            huh.weightx = 0.25;
-            gridp.add(title1, huh);
-            gridp.add(ex5, huh);
+            infop.add(nm);
+            infop.add(Box.createRigidArea(new Dimension(0, 20)));
+            infop.add(id);
+            infop.add(Box.createRigidArea(new Dimension(0, 20)));
+            infop.add(smstr);
+            infop.add(Box.createRigidArea(new Dimension(0, 20)));
+            infop.add(uname);
             
-            huh.gridx = 2;
-            huh.weightx = 0.25;
-            gridp.add(title2, huh);
-            gridp.add(ex6, huh);
+            bodyp1.add(scrollPane);
+            bodyp2.add(scrollPane2);
+            bodyp3.add(refreshp,BorderLayout.NORTH);
+            bodyp3.add(infop,BorderLayout.CENTER);
+            bodyp3.add(gradep,BorderLayout.SOUTH);
+            bodyRow.add(bodyp1);
+            bodyRow.add(bodyp2);
+            bodyRow.add(bodyp3);
+            p.add(titleRow,BorderLayout.NORTH);
+            p.add(bodyRow,BorderLayout.CENTER);
             
-            huh.gridy = 1;
-            huh.gridx = 0;
-            huh.weightx = 0.5;
-            huh.weighty = 0.85;
-            gridp.add(ex1, huh);
-            
-            huh.gridx = 1;
-            huh.weightx = 0.5;
-            gridp.add(ex2, huh);
-            
-            huh.gridx = 2;
-            huh.weightx = 0.25;
-            gridp.add(ex3, huh);
-            
-            add(gridp);
-            //setExtendedState(JFrame.MAXIMIZED_BOTH);
-            //setUndecorated(true);
-            setSize(1200, 800);
+            setSize(1200,700);
             setLocationRelativeTo(null); // center on screen
             setVisible(true);
-            gridp.setVisible(true);
+            p.setVisible(true);
+            add(p);
+            
+            
+            
+            refresh.addActionListener
+                (
+                    l -> 
+                    {
+                      load();
+                    }
+                );
+            
+            grade.addActionListener
+                (
+                    l -> 
+                    {
+                      
+                    }
+                );
+            
         }
+          public void load(){
+            
+            Call<GetManagedCoursesResponse> call = teacherInterface.getManagedCourses(ApiClient.getToken());
+            
+            call.enqueue(new Callback<GetManagedCoursesResponse>() {
+
+            @Override
+            public void onResponse(Call<GetManagedCoursesResponse> call, Response<GetManagedCoursesResponse> response) {
+                if (response.isSuccessful()) {
+                        GetManagedCoursesResponse getcrsesResponse = response.body();
+                        
+                        crses = getcrsesResponse.getManagedCourses();
+
+                } else {
+                        errorLabel.setBounds(500,550,600,50);
+                            try {
+                                 ApiResponse loginResponse = gson.fromJson(response.errorBody().string(), ApiResponse.class);
+                                 errorLabel.setText("*"+ loginResponse.getMessage());
+                            } catch (IOException ex) {
+                                 errorLabel.setText("*"+ex.getMessage());
+                                    }
+                                }
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<GetManagedCoursesResponse> call, Throwable t) {
+                                errorLabel.setText("*Something went wrong. Please try again.");
+                            }
+
+                        });
+            
+            for(int i=0;i<crses.size();i++){
+            ManagedCourse course = crses.get(i);
+            String label = course.getID();
+            String name = course.getName();
+            crsesName.add(i,label + "-" + name); 
+            
+            
+        }  
+          }   
 
     public static void main(String[] args) {
         new TeachView("Teacher View");

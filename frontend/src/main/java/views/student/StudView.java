@@ -82,28 +82,25 @@ public class StudView extends JFrame{
         
         infop = new JPanel();
         infop.setLayout(new BoxLayout(infop,BoxLayout.Y_AXIS));
-        infop.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
         infop.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         infop.setBackground(new Color(80, 80, 80));
         
         bodypanel1 = new JPanel();
         bodypanel1.setLayout(new BorderLayout());
-        bodypanel1.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
         bodypanel1.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         
         bodypanel2 = new JPanel();
         bodypanel2.setLayout(new BorderLayout());
-        bodypanel2.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         bodypanel2.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         
         btnpanel1 = new JPanel();
         btnpanel1.setLayout(new FlowLayout());
-        btnpanel1.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         btnpanel1.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         
         btnpanel2 = new JPanel();
         btnpanel2.setLayout(new FlowLayout());
-        btnpanel2.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         btnpanel2.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         
         refreshp = new JPanel();
@@ -138,11 +135,13 @@ public class StudView extends JFrame{
         titlepanel1.setLayout(new FlowLayout(FlowLayout.CENTER));
         titlepanel1.add(title1);
         titlepanel1.setPreferredSize(new Dimension(0, 60));
+        titlepanel1.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         
         titlepanel2 = new JPanel();
         titlepanel2.setLayout(new FlowLayout(FlowLayout.CENTER));
         titlepanel2.add(title2);
         titlepanel2.setPreferredSize(new Dimension(0, 10));
+        titlepanel2.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         
         cid = new JLabel("Course's ID:");
         cid.setFont(new Font("Arial", Font.PLAIN, 20));
