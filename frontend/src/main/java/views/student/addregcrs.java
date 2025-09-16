@@ -20,6 +20,8 @@ import javax.swing.event.ListSelectionEvent;
 
 import org.jdesktop.swingx.prompt.PromptSupport;
 import com.google.gson.Gson;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
 import models.secretary.response.GetCoursesResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -65,6 +67,30 @@ public class addregcrs extends JFrame{
          allAvailCrses = new ArrayList<>();
          toreg = new ArrayList<>();
          
+         crsesName2.setCellRenderer(new DefaultListCellRenderer() {
+         @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            label.setFont(new Font("Arial", Font.PLAIN, 24));
+            label.setHorizontalAlignment(SwingConstants.CENTER);
+            Border lineBorder = BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(78, 80, 82));
+            Border leftBorder = BorderFactory.createEmptyBorder(0, 10, 0, 0);
+            label.setBorder(new CompoundBorder(lineBorder, leftBorder));
+
+        if (isSelected) {
+            label.setBackground(new Color(60, 60, 60));
+            
+        } else {
+            label.setBackground(new Color(80, 80, 80));
+            
+        }
+
+        label.setOpaque(true);  // important for background color
+
+        return label;
+    }
+});
+         
          
          
          Call<GetAvailableCoursesResponse> call = stuInterface.getAvailableCourses(ApiClient.getToken());
@@ -77,6 +103,12 @@ public class addregcrs extends JFrame{
                 if (response.isSuccessful()) {
                         GetAvailableCoursesResponse availResponse = response.body();
                         allAvailCrses = availResponse.getAvailableCourses();
+                        for(int i=0;i<allAvailCrses.size();i++){
+                        AvailableCourse course = allAvailCrses.get(i);
+                        String label = course.getID();
+                        String name = course.getName();
+                        crsesName.add(i,label + "-" + name); 
+        }
 
                 } else {
                         errorLabel.setBounds(500,550,600,50);
@@ -98,13 +130,6 @@ public class addregcrs extends JFrame{
 
                         });
          
-         
-            for(int i=0;i<allAvailCrses.size();i++){
-            AvailableCourse course = allAvailCrses.get(i);
-            String label = course.getID();
-            String name = course.getName();
-            crsesName.add(i,label + "-" + name); 
-        }
             
          crsesName2.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
          
@@ -151,6 +176,7 @@ public class addregcrs extends JFrame{
                            AvailableCourse course = allAvailCrses.get(index);
                            String label = course.getID();
                            toreg.add(label);
+                           dispose();
                            
                        }
             RegisterCoursesRequest regRequest = new RegisterCoursesRequest(toreg);           

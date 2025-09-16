@@ -17,7 +17,7 @@ public interface StudentInterface {
     @PUT("/registeredCourses")
     Call<ApiResponse> registerCourse(@Header("Authorization") String token,@Body RegisterCoursesRequest request);
 
-    @DELETE("registeredCourses/{courseID")
+    @DELETE("registeredCourses/{courseID}")
     Call<ApiResponse> deleteCourse(@Path("courseID") String courseID, @Header("Authorization") String token);
 
     @GET("/availableCourses")

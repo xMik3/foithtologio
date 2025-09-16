@@ -16,6 +16,8 @@ import javax.swing.event.ListSelectionEvent;
 
 import org.jdesktop.swingx.prompt.PromptSupport;
 import com.google.gson.Gson;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -39,8 +41,9 @@ public class StudView extends JFrame{
     JLabel smstr;
     JLabel nm;
     JLabel cid;
+    JLabel grade;
     
-    int curind;
+    int curind=0;
     
     JButton addcrs;
     JButton rmcrs;
@@ -48,6 +51,8 @@ public class StudView extends JFrame{
     DefaultListModel<String> crsesName;
     JList crsesName2;
     ArrayList<RegisteredCourse> regcrses;
+    
+    boolean isRefreshing = false;
     
     private StudentInterface stuInterface;
     private Gson gson;
@@ -76,6 +81,38 @@ public class StudView extends JFrame{
         regcrses = new ArrayList<>();
         crsesName2.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
+        
+        crsesName2.setCellRenderer(new DefaultListCellRenderer() {
+    @Override
+    public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+        // Set font and text alignment
+        label.setFont(new Font("Arial", Font.PLAIN, 24));
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+
+        // Set borders
+        Border lineBorder = BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(78, 80, 82));
+        Border leftBorder = BorderFactory.createEmptyBorder(0, 10, 0, 0);
+        label.setBorder(new CompoundBorder(lineBorder, leftBorder));
+
+       
+        if (isSelected) {
+            label.setBackground(new Color(60, 60, 60));
+            
+        } else {
+            label.setBackground(new Color(80, 80, 80));
+            
+        }
+
+        label.setOpaque(true);  // important for background color
+
+        return label;
+    }
+});
+        
+        
+        
         load();
         
         panel = new JPanel(new BorderLayout());
@@ -84,7 +121,7 @@ public class StudView extends JFrame{
         infop.setLayout(new BoxLayout(infop,BoxLayout.Y_AXIS));
         
         infop.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
-        infop.setBackground(new Color(80, 80, 80));
+        
         
         bodypanel1 = new JPanel();
         bodypanel1.setLayout(new BorderLayout());
@@ -145,18 +182,27 @@ public class StudView extends JFrame{
         
         cid = new JLabel("Course's ID:");
         cid.setFont(new Font("Arial", Font.PLAIN, 20));
+        cid.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         tname = new JLabel("Course instructed by:");
         tname.setFont(new Font("Arial", Font.PLAIN, 20));
+        tname.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         tsurname = new JLabel("tsur");
         tsurname.setFont(new Font("Arial", Font.PLAIN, 20));
+        tsurname.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         smstr = new JLabel("smstr");
         smstr.setFont(new Font("Arial", Font.PLAIN, 20));
+        smstr.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         nm = new JLabel("nm");
         nm.setFont(new Font("Arial", Font.PLAIN, 20));
+        nm.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        grade = new JLabel("grade");
+        grade.setFont(new Font("Arial", Font.PLAIN, 20));
+        grade.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         JPanel controlPanel = new JPanel();
         controlPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
@@ -164,33 +210,32 @@ public class StudView extends JFrame{
         controlPanel.add(addcrs);
         controlPanel.add(rmcrs);
         
-        
-        JPanel listPanel = new JPanel();
-            listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
-            listPanel.add(crsesName2);
-            listPanel.setBackground(new Color(80, 80, 80));
-            listPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             
             // Put listPanel inside a scroll pane
-            JScrollPane scrollPane = new JScrollPane(listPanel);
+            JScrollPane scrollPane = new JScrollPane(crsesName2);
             scrollPane.setOpaque(false);
             scrollPane.getViewport().setOpaque(false);
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
             scrollPane.setBackground(new Color(80, 80, 80));
+            scrollPane.getViewport().setBackground(new Color(80, 80, 80));
             scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             
             addcrs.addActionListener
                 (
                     l -> 
                     {
+                      if (curind != -1 && !isRefreshing) {  
                       new addregcrs(this);
+                      }
                     }
                 );
+            
             
             rmcrs.addActionListener
                 (
                     l -> 
                     {
+                        if (curind != -1 && !isRefreshing) {
                         RegisteredCourse course = regcrses.get(curind);
                         
             Call<ApiResponse> call2 = stuInterface.deleteCourse(course.getID(),ApiClient.getToken());
@@ -225,12 +270,13 @@ public class StudView extends JFrame{
 
                         }); 
                     }
-                );
+                    });
             
             crsesName2.addListSelectionListener
                 (
                     l -> 
                     {
+                        if (!l.getValueIsAdjusting() && !isRefreshing) {
                         rmcrs.setOpaque(true);
                         rmcrs.setBackground(originalBackground);
                         
@@ -240,7 +286,9 @@ public class StudView extends JFrame{
                         cid.setText("Course's ID:" + course.getID());
                         smstr.setText("Course's Semester:" + course.getSemester());
                         tname.setText("Course instructed by:" + course.getTeacherSurname() + course.getTeacherName());
-                    }
+                        grade.setText("Grade:" + course.getGrade());
+                        System.out.println(curind);
+                    }}
                 );
             
             refresh.addActionListener
@@ -259,6 +307,8 @@ public class StudView extends JFrame{
             infop.add(smstr);
             infop.add(Box.createRigidArea(new Dimension(0, 20)));
             infop.add(tname);
+            infop.add(Box.createRigidArea(new Dimension(0, 20)));
+            infop.add(grade);
             
             refreshp.add(refresh,BorderLayout.CENTER);
             
@@ -292,6 +342,8 @@ public class StudView extends JFrame{
 }
         public void load(){
             
+            isRefreshing = true;
+            
             Call<GetRegisteredCoursesResponse> call = stuInterface.getRegisteredCourses(ApiClient.getToken());
             
             call.enqueue(new Callback<GetRegisteredCoursesResponse>() {
@@ -302,6 +354,16 @@ public class StudView extends JFrame{
                         GetRegisteredCoursesResponse getcrsesResponse = response.body();
                         
                         regcrses = getcrsesResponse.getRegisteredCourses();
+                        
+                        crsesName.clear();
+                        
+                        for(int i=0;i<regcrses.size();i++){
+                        RegisteredCourse course = regcrses.get(i);
+                        String label = course.getID();
+                        String name = course.getName();
+                        crsesName.add(i,label + "-" + name); 
+                }
+                        isRefreshing = false;
 
                 } else {
                         errorLabel.setBounds(500,550,600,50);
@@ -311,6 +373,7 @@ public class StudView extends JFrame{
                             } catch (IOException ex) {
                                  errorLabel.setText("*"+ex.getMessage());
                                     }
+                                    isRefreshing = false;
                                 }
 
                             }
@@ -318,16 +381,11 @@ public class StudView extends JFrame{
                             @Override
                             public void onFailure(Call<GetRegisteredCoursesResponse> call, Throwable t) {
                                 errorLabel.setText("*Something went wrong. Please try again.");
+                                isRefreshing = false;
                             }
 
                         });
             
-            for(int i=0;i<regcrses.size();i++){
-            RegisteredCourse course = regcrses.get(i);
-            String label = course.getID();
-            String name = course.getName();
-            crsesName.add(i,label + "-" + name); 
-        }
             
         }
         
@@ -341,8 +399,4 @@ public class StudView extends JFrame{
             });
         }
         
-        public static void main(String[] args) {
-        new StudView("bruh");
-        
-    }
 }
