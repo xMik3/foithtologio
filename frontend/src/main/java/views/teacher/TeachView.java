@@ -33,6 +33,7 @@ import models.general.ApiResponse;
 import models.general.Course;
 import models.teacher.ManagedCourse;
 import models.teacher.ManagedStudent;
+import models.teacher.request.GradeRequest;
 import models.teacher.response.GetManagedCoursesResponse;
 import models.teacher.response.GetManagedStudentsResponse;
 import retrofit2.Call;
@@ -51,6 +52,10 @@ public class TeachView extends JFrame {
         JLabel nm;
         JLabel id;
         JLabel errorLabel;
+        JLabel gradeL;
+        
+        int curind1;
+        int curind2;
         
         private JPanel p;
         private JPanel titleRow;
@@ -69,6 +74,9 @@ public class TeachView extends JFrame {
         
         private JButton refresh;
         private JButton grade;
+        
+        double doublegrade;
+        boolean isRefreshing = false;
         
         DefaultListModel<String> crsesName;
         JList crsesName2;
@@ -97,6 +105,7 @@ public class TeachView extends JFrame {
             errorLabel = new JLabel();
             gson = new Gson();
             
+            
             crses = new ArrayList<>();
             crsesName = new DefaultListModel<>();
             crsesName2 = new JList(crsesName);
@@ -104,8 +113,10 @@ public class TeachView extends JFrame {
             
             stu = new ArrayList<>();
             stuName = new DefaultListModel<>();
-            stuName2 = new JList(crsesName);
+            stuName2 = new JList(stuName);
             stuName2.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            
+            load();
             
             p = new JPanel();
             p.setLayout(new BorderLayout());
@@ -166,6 +177,9 @@ public class TeachView extends JFrame {
             nm = new JLabel("1323");
             nm.setFont(new Font("Arial", Font.PLAIN, 20));
             
+            gradeL = new JLabel("1323");
+            gradeL.setFont(new Font("Arial", Font.PLAIN, 20));
+            
             id = new JLabel("322332");
             id.setFont(new Font("Arial", Font.PLAIN, 20));
             
@@ -178,14 +192,8 @@ public class TeachView extends JFrame {
             smstr = new JLabel("2434343");
             smstr.setFont(new Font("Arial", Font.PLAIN, 20));
             
-            JPanel listPanel1 = new JPanel();
-            listPanel1.setLayout(new BoxLayout(listPanel1, BoxLayout.Y_AXIS));
-            listPanel1.add(crsesName2);
-            listPanel1.setBackground(new Color(80, 80, 80));
-            listPanel1.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-            
             // Put listPanel inside a scroll pane
-            JScrollPane scrollPane = new JScrollPane(listPanel1);
+            JScrollPane scrollPane = new JScrollPane(crsesName2);
             scrollPane.setOpaque(false);
             scrollPane.getViewport().setOpaque(false);
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -194,15 +202,8 @@ public class TeachView extends JFrame {
 
 
             
-            
-            
-            JPanel listPanel2 = new JPanel();
-            listPanel2.setLayout(new BoxLayout(listPanel2, BoxLayout.Y_AXIS));
-            listPanel2.add(stuName2);
-            listPanel2.setBackground(new Color(80, 80, 80));
-            listPanel2.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-            JScrollPane scrollPane2 = new JScrollPane(listPanel2);
+            JScrollPane scrollPane2 = new JScrollPane(stuName2);
             scrollPane2.setOpaque(false);
             scrollPane2.getViewport().setOpaque(false);
             scrollPane2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -245,6 +246,87 @@ public class TeachView extends JFrame {
             p.setVisible(true);
             add(p);
             
+            crsesName2.addListSelectionListener
+                (
+                    l -> 
+                    {
+                        if (!l.getValueIsAdjusting() && !isRefreshing) {
+                        
+                        curind1 = crsesName2.getSelectedIndex();
+                        ManagedCourse course = crses.get(curind1);
+                        id.setText("Course's ID:" + course.getID());
+                        nm.setText("Course's Name:" + course.getName());
+                        smstr.setText("Course's Semester:" + course.getSemester());
+                        usurname.setVisible(false);
+                        System.out.println(curind1);
+                        
+                        String cid = course.getID();
+                        Call<GetManagedStudentsResponse> call = teacherInterface.getManagedStudents(ApiClient.getToken(),cid);
+            
+            call.enqueue(new Callback<GetManagedStudentsResponse>() {
+
+            @Override
+            public void onResponse(Call<GetManagedStudentsResponse> call, Response<GetManagedStudentsResponse> response) {
+                if (response.isSuccessful()) {
+                        GetManagedStudentsResponse getstuResponse = response.body();
+                        
+                        stuName.clear();
+                        
+                        stu = getstuResponse.getStudents();
+                        for(int i=0;i<stu.size();i++){
+                        ManagedStudent student = stu.get(i);
+                        String label = student.getID();
+                        String name = student.getNAME();
+                        String surname = student.getSURNAME();
+                        stuName.add(i,label + "-" + name); 
+                        
+            
+            
+        }
+                        isRefreshing = false;
+
+                } else {
+                        errorLabel.setBounds(500,550,600,50);
+                            try {
+                                 ApiResponse loginResponse = gson.fromJson(response.errorBody().string(), ApiResponse.class);
+                                 errorLabel.setText("*"+ loginResponse.getMessage());
+                            } catch (IOException ex) {
+                                 errorLabel.setText("*"+ex.getMessage());
+                                    }
+                            isRefreshing = false;
+                            }
+
+                        }
+
+                            @Override
+                            public void onFailure(Call<GetManagedStudentsResponse> call, Throwable t) {
+                                errorLabel.setText("*Something went wrong. Please try again.");
+                                isRefreshing = false;
+                            }
+
+                        });
+                    }}
+                );
+            
+            
+            
+            
+            stuName2.addListSelectionListener
+                (
+                    l -> 
+                    {
+                        if (!l.getValueIsAdjusting() && !isRefreshing) {
+                        
+                        curind2 = stuName2.getSelectedIndex();
+                        ManagedStudent student = stu.get(curind2);
+                        id.setText("Student's ID:" + student.getID());
+                        nm.setText("Student's Name:" + student.getNAME());
+                        smstr.setText("Course's Surname:" + student.getSURNAME());
+                        usurname.setText("Student's semester:" + student.getSURNAME());
+                        usurname.setVisible(true);
+                        System.out.println(curind2);
+                    }}
+                );
             
             
             refresh.addActionListener
@@ -258,24 +340,26 @@ public class TeachView extends JFrame {
             grade.addActionListener
                 (
                     l -> 
-                    {
-                      
-                    }
-                );
-            
-        }
-          public void load(){
-            
-            Call<GetManagedCoursesResponse> call = teacherInterface.getManagedCourses(ApiClient.getToken());
-            
-            call.enqueue(new Callback<GetManagedCoursesResponse>() {
+                    {   curind1 = crsesName2.getSelectedIndex();
+                        curind2 = stuName2.getSelectedIndex();
 
-            @Override
-            public void onResponse(Call<GetManagedCoursesResponse> call, Response<GetManagedCoursesResponse> response) {
-                if (response.isSuccessful()) {
-                        GetManagedCoursesResponse getcrsesResponse = response.body();
+                        if(curind1 != -1 && curind2 != -1){
+
+                        String course = crses.get(curind1).getID();
+                        String student = stu.get(curind2).getID();
                         
-                        crses = getcrsesResponse.getManagedCourses();
+                        GradeRequest gradeRequest = new GradeRequest(doublegrade);
+                        
+                        Call<ApiResponse> call = teacherInterface.gradeStudent(ApiClient.getToken(),course,student,gradeRequest);
+            
+                        call.enqueue(new Callback<ApiResponse>() {
+
+                    @Override
+                        public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                            if (response.isSuccessful()) {
+                            ApiResponse getcrsesResponse = response.body();
+                            
+             
 
                 } else {
                         errorLabel.setBounds(500,550,600,50);
@@ -290,20 +374,64 @@ public class TeachView extends JFrame {
                             }
 
                             @Override
-                            public void onFailure(Call<GetManagedCoursesResponse> call, Throwable t) {
+                            public void onFailure(Call<ApiResponse> call, Throwable t) {
                                 errorLabel.setText("*Something went wrong. Please try again.");
                             }
 
                         });
+                    }
+                }
+            );
             
-            for(int i=0;i<crses.size();i++){
-            ManagedCourse course = crses.get(i);
-            String label = course.getID();
-            String name = course.getName();
-            crsesName.add(i,label + "-" + name); 
+    }
+          public void load(){
+              isRefreshing = true;
+            
+            Call<GetManagedCoursesResponse> call = teacherInterface.getManagedCourses(ApiClient.getToken());
+            
+            call.enqueue(new Callback<GetManagedCoursesResponse>() {
+
+            @Override
+            public void onResponse(Call<GetManagedCoursesResponse> call, Response<GetManagedCoursesResponse> response) {
+                if (response.isSuccessful()) {
+                        GetManagedCoursesResponse getcrsesResponse = response.body();
+                        
+                        crsesName.clear();
+                        
+                        crses = getcrsesResponse.getManagedCourses();
+                        for(int i=0;i<crses.size();i++){
+                        ManagedCourse course = crses.get(i);
+                        String label = course.getID();
+                        String name = course.getName();
+                        crsesName.add(i,label + "-" + name); 
+                        
             
             
-        }  
+        }
+                        isRefreshing = false;
+
+                } else {
+                        errorLabel.setBounds(500,550,600,50);
+                            try {
+                                 ApiResponse loginResponse = gson.fromJson(response.errorBody().string(), ApiResponse.class);
+                                 errorLabel.setText("*"+ loginResponse.getMessage());
+                            } catch (IOException ex) {
+                                 errorLabel.setText("*"+ex.getMessage());
+                                    }
+                            isRefreshing = false;
+                            }
+
+                        }
+
+                            @Override
+                            public void onFailure(Call<GetManagedCoursesResponse> call, Throwable t) {
+                                errorLabel.setText("*Something went wrong. Please try again.");
+                                isRefreshing = false;
+                            }
+
+                        });
+            
+              
           }   
 
     public static void main(String[] args) {
