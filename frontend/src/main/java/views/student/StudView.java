@@ -236,7 +236,9 @@ public class StudView extends JFrame{
                     l -> 
                     {
                         if (curind != -1 && !isRefreshing) {
-                        RegisteredCourse course = regcrses.get(curind);
+                        
+                            int curind2 = curind;
+                            RegisteredCourse course = regcrses.get(curind2);
                         
             Call<ApiResponse> call2 = stuInterface.deleteCourse(course.getID(),ApiClient.getToken());
             
@@ -247,8 +249,8 @@ public class StudView extends JFrame{
                 if (response.isSuccessful()) {
                         ApiResponse delResponse = response.body();
                             SwingUtilities.invokeLater(() -> {
-                            crsesName.remove(curind);
-                            regcrses.remove(curind); 
+                            crsesName.remove(curind2);
+                            regcrses.remove(curind2); 
                             });
                             
                 } else {
