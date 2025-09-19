@@ -6,10 +6,17 @@ import client.ApiClient;
 import com.google.gson.Gson;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
 import java.io.IOException;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -35,14 +42,16 @@ public class Grade extends JFrame{
     JTextField number;
     
     JPanel titlep;
-    JPanel bodyp;
+    JPanel errorp;
     JPanel controlp;
     JPanel p;
+    JPanel numberp;
     
     TeachView teacherview;
     TeacherInterface teacherInterface;
     
     JLabel errorLabel;
+    JLabel dummy;
     
     Gson gson;
     
@@ -62,29 +71,40 @@ public class Grade extends JFrame{
             
             teacherInterface = ApiClient.getClient().create(TeacherInterface.class);
         
-        p = new JPanel(new BorderLayout());
-        titlep = new JPanel(new BorderLayout());
-        titlep.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        p = new JPanel();
+        p.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        
+        titlep = new JPanel(new FlowLayout(FlowLayout.LEFT));
         titlep.setBackground(new Color(80, 80, 80));
         
-        bodyp = new JPanel(new BorderLayout());
-        bodyp.setBackground(new Color(80, 80, 80));
-        bodyp.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        errorp = new JPanel(new FlowLayout(FlowLayout.CENTER));
         
-        controlp = new JPanel(new BorderLayout());
-        controlp.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        controlp = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         
         cnfrm = new JButton("Confirm");
         cnfrm.setFont(new Font("Arial", Font.PLAIN, 20));
+        Dimension buttonsize = cnfrm.getSize();
         
-        number = new JTextField();
+        number = new JTextField(4);
         number.setFont(new Font("Arial", Font.PLAIN, 20));
+        number.setMaximumSize(buttonsize);
         
-        mssg = new JLabel("Assign a grade to" + "" + student.getNAME() + "" + student.getSURNAME() + "" + "for" + "" + course.getName());
+        numberp = new JPanel();
+        numberp.setLayout(new FlowLayout(FlowLayout.CENTER));
+        
+        mssg = new JLabel("Assign a grade to" + " " + student.getNAME() + " " + student.getSURNAME() + " " + "for" + " " + course.getName());
         mssg.setFont(new Font("Arial", Font.PLAIN, 20));
         
         title = new JLabel("Grade Student");
         title.setFont(new Font("", Font.PLAIN, 24));
+        
+        dummy = new JLabel();
+        
+        errorLabel = new JLabel();
+        errorLabel.setFont(new Font("Arial", Font.PLAIN, 20));
+        errorLabel.setForeground(Color.RED);
+        
         
          cnfrm.addActionListener
                 (
@@ -129,20 +149,49 @@ public class Grade extends JFrame{
 
                         });
                     
-                }else{errorLabel.setText("Invalid Input");
+                }else{
+                        errorLabel.setText("Invalid Input");
                 
                     }
                 }
             );
          
-         titlep.add(title,BorderLayout.WEST);
-         bodyp.add(mssg,BorderLayout.WEST);
-         bodyp.add(number,BorderLayout.CENTER);
-         controlp.add(cnfrm,BorderLayout.EAST);
+         titlep.add(title);
          
-         p.add(titlep, BorderLayout.NORTH);
-         p.add(bodyp, BorderLayout.CENTER);
-         p.add(controlp, BorderLayout.SOUTH);
+         numberp.add(mssg);
+         numberp.add(number);
+         
+         errorp.add(errorLabel);
+         
+         controlp.add(cnfrm);
+         
+         gbc.fill = GridBagConstraints.BOTH;
+         
+         gbc.weightx = 1;
+         
+         gbc.gridx = 0;
+         gbc.gridy = 0;
+         gbc.weighty = 0.15;
+         gbc.insets = new Insets(5,5,5,5);
+         p.add(titlep,gbc);
+         
+         gbc.gridx = 0;
+         gbc.gridy = 1;
+         gbc.weighty = 0.55;
+         gbc.insets = new Insets(5,5,5,5);
+         p.add(numberp,gbc);
+         
+         gbc.gridx = 0;
+         gbc.gridy = 2;
+         gbc.weighty = 0.15;
+         gbc.insets = new Insets(5,5,5,5);
+         p.add(errorp,gbc);
+         
+         gbc.gridx = 0;
+         gbc.gridy = 3;
+         gbc.weighty = 0.15;
+         gbc.insets = new Insets(5,5,5,5);
+         p.add(controlp,gbc);
          
          add(p);
          setVisible(true);

@@ -340,7 +340,7 @@ public class StudView extends JFrame{
 
             panel.setVisible(true);
             setVisible(true);
-            setSize(1200,700);
+            setSize(1400,900);
             add(panel);
             
 }

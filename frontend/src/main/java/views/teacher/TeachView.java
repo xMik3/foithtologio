@@ -301,7 +301,7 @@ public class TeachView extends JFrame {
             p.add(titleRow,BorderLayout.NORTH);
             p.add(bodyRow,BorderLayout.CENTER);
             
-            setSize(1200,700);
+            setSize(1400,900);
             setLocationRelativeTo(null); // center on screen
             setVisible(true);
             p.setVisible(true);
