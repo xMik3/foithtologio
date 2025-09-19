@@ -7,10 +7,10 @@ import java.util.ArrayList;
 
 public class GetManagedCoursesResponse extends ApiResponse {
 
-    private ArrayList<ManagedCourse> managedCourses;
+    private ArrayList<ManagedCourse> courses;
 
     public ArrayList<ManagedCourse> getManagedCourses() {
-        return this.managedCourses;
+        return this.courses;
     }
 
 }

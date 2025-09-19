@@ -281,6 +281,10 @@ public class StudView extends JFrame{
                         rmcrs.setBackground(originalBackground);
                         
                         curind = crsesName2.getSelectedIndex();
+                        
+                        if (curind == -1) {
+                            return; // nothing selected, exit early
+        }
                         RegisteredCourse course = regcrses.get(curind);
                         nm.setText("Course's Name:" + course.getName());
                         cid.setText("Course's ID:" + course.getID());

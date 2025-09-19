@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -29,6 +30,8 @@ import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
 import models.general.ApiResponse;
 import models.general.Course;
 import models.teacher.ManagedCourse;
@@ -111,18 +114,76 @@ public class TeachView extends JFrame {
             crsesName2 = new JList(crsesName);
             crsesName2.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             
+            crsesName2.setCellRenderer(new DefaultListCellRenderer() {
+                    @Override
+                        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+                         // Set font and text alignment
+                        label.setFont(new Font("Arial", Font.PLAIN, 24));
+                        label.setHorizontalAlignment(SwingConstants.CENTER);
+
+                        // Set borders
+                        Border lineBorder = BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(78, 80, 82));
+                        Border leftBorder = BorderFactory.createEmptyBorder(0, 10, 0, 0);
+                        label.setBorder(new CompoundBorder(lineBorder, leftBorder));
+
+       
+                        if (isSelected) {
+                            label.setBackground(new Color(60, 60, 60));
+            
+                        } else {
+                            label.setBackground(new Color(80, 80, 80));
+            
+                        }
+
+                        label.setOpaque(true);  // important for background color
+
+                    return label;
+    }
+});
+            
             stu = new ArrayList<>();
             stuName = new DefaultListModel<>();
             stuName2 = new JList(stuName);
             stuName2.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            
+            stuName2.setCellRenderer(new DefaultListCellRenderer() {
+                    @Override
+                        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+                         // Set font and text alignment
+                        label.setFont(new Font("Arial", Font.PLAIN, 24));
+                        label.setHorizontalAlignment(SwingConstants.CENTER);
+
+                        // Set borders
+                        Border lineBorder = BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(78, 80, 82));
+                        Border leftBorder = BorderFactory.createEmptyBorder(0, 10, 0, 0);
+                        label.setBorder(new CompoundBorder(lineBorder, leftBorder));
+
+       
+                        if (isSelected) {
+                            label.setBackground(new Color(60, 60, 60));
+            
+                        } else {
+                            label.setBackground(new Color(80, 80, 80));
+            
+                        }
+
+                        label.setOpaque(true);  // important for background color
+
+                    return label;
+    }
+});
             
             load();
             
             p = new JPanel();
             p.setLayout(new BorderLayout());
             
-            title0 = new JLabel("Students");
-            title1 = new JLabel("Courses");
+            title0 = new JLabel("Courses");
+            title1 = new JLabel("Students");
             title2 = new JLabel("Description");
             
             title0.setFont(new Font("Arial", Font.PLAIN, 30));
@@ -174,22 +235,22 @@ public class TeachView extends JFrame {
             refresh = new JButton("Refresh");
             refresh.setFont(new Font("", Font.PLAIN, 24));
             
-            nm = new JLabel("1323");
+            nm = new JLabel();
             nm.setFont(new Font("Arial", Font.PLAIN, 20));
             
-            gradeL = new JLabel("1323");
+            gradeL = new JLabel();
             gradeL.setFont(new Font("Arial", Font.PLAIN, 20));
             
-            id = new JLabel("322332");
+            id = new JLabel();
             id.setFont(new Font("Arial", Font.PLAIN, 20));
             
-            uname = new JLabel("2343423");
+            uname = new JLabel();
             uname.setFont(new Font("Arial", Font.PLAIN, 20));
             
-            usurname = new JLabel("4232343");
+            usurname = new JLabel();
             usurname.setFont(new Font("Arial", Font.PLAIN, 20));
             
-            smstr = new JLabel("2434343");
+            smstr = new JLabel();
             smstr.setFont(new Font("Arial", Font.PLAIN, 20));
             
             // Put listPanel inside a scroll pane
@@ -246,13 +307,17 @@ public class TeachView extends JFrame {
             p.setVisible(true);
             add(p);
             
-            crsesName2.addListSelectionListener
+        crsesName2.addListSelectionListener
                 (
                     l -> 
                     {
                         if (!l.getValueIsAdjusting() && !isRefreshing) {
                         
                         curind1 = crsesName2.getSelectedIndex();
+                        
+                        if (curind1 == -1) {
+                            return; 
+        }
                         ManagedCourse course = crses.get(curind1);
                         id.setText("Course's ID:" + course.getID());
                         nm.setText("Course's Name:" + course.getName());
@@ -311,13 +376,17 @@ public class TeachView extends JFrame {
             
             
             
-            stuName2.addListSelectionListener
+        stuName2.addListSelectionListener
                 (
                     l -> 
                     {
                         if (!l.getValueIsAdjusting() && !isRefreshing) {
                         
                         curind2 = stuName2.getSelectedIndex();
+                        
+                        if (curind2 == -1) {
+                            return; 
+        }
                         ManagedStudent student = stu.get(curind2);
                         id.setText("Student's ID:" + student.getID());
                         nm.setText("Student's Name:" + student.getNAME());
@@ -329,7 +398,7 @@ public class TeachView extends JFrame {
                 );
             
             
-            refresh.addActionListener
+        refresh.addActionListener
                 (
                     l -> 
                     {
@@ -337,48 +406,17 @@ public class TeachView extends JFrame {
                     }
                 );
             
-            grade.addActionListener
+        grade.addActionListener
                 (
                     l -> 
                     {   curind1 = crsesName2.getSelectedIndex();
                         curind2 = stuName2.getSelectedIndex();
 
                         if(curind1 != -1 && curind2 != -1){
-
-                        String course = crses.get(curind1).getID();
-                        String student = stu.get(curind2).getID();
-                        
-                        GradeRequest gradeRequest = new GradeRequest(doublegrade);
-                        
-                        Call<ApiResponse> call = teacherInterface.gradeStudent(ApiClient.getToken(),course,student,gradeRequest);
-            
-                        call.enqueue(new Callback<ApiResponse>() {
-
-                    @Override
-                        public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-                            if (response.isSuccessful()) {
-                            ApiResponse getcrsesResponse = response.body();
+                            ManagedCourse course = crses.get(curind1);
+                            ManagedStudent student = stu.get(curind2);
+                            new Grade(this,course,student);
                             
-             
-
-                } else {
-                        errorLabel.setBounds(500,550,600,50);
-                            try {
-                                 ApiResponse loginResponse = gson.fromJson(response.errorBody().string(), ApiResponse.class);
-                                 errorLabel.setText("*"+ loginResponse.getMessage());
-                            } catch (IOException ex) {
-                                 errorLabel.setText("*"+ex.getMessage());
-                                    }
-                                }
-
-                            }
-
-                            @Override
-                            public void onFailure(Call<ApiResponse> call, Throwable t) {
-                                errorLabel.setText("*Something went wrong. Please try again.");
-                            }
-
-                        });
                     }
                 }
             );
@@ -398,14 +436,20 @@ public class TeachView extends JFrame {
                         
                         crsesName.clear();
                         
-                        crses = getcrsesResponse.getManagedCourses();
+                        if (getcrsesResponse != null && getcrsesResponse.getManagedCourses() != null) {
+                                crses = getcrsesResponse.getManagedCourses();
+                                
+                                } else {
+                                crses = new ArrayList<>(); 
+                                
+                            }
+ 
                         for(int i=0;i<crses.size();i++){
                         ManagedCourse course = crses.get(i);
                         String label = course.getID();
                         String name = course.getName();
                         crsesName.add(i,label + "-" + name); 
                         
-            
             
         }
                         isRefreshing = false;
@@ -432,7 +476,12 @@ public class TeachView extends JFrame {
                         });
             
               
-          }   
+          }
+          
+          public void setGrade(double grade){
+              
+              this.doublegrade = grade;
+          }
 
     public static void main(String[] args) {
         new TeachView("Teacher View");
