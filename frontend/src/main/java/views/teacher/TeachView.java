@@ -113,6 +113,7 @@ public class TeachView extends JFrame {
             crsesName = new DefaultListModel<>();
             crsesName2 = new JList(crsesName);
             crsesName2.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            crsesName2.setFixedCellHeight(50);
             
             crsesName2.setCellRenderer(new DefaultListCellRenderer() {
                     @Override
@@ -147,6 +148,7 @@ public class TeachView extends JFrame {
             stuName = new DefaultListModel<>();
             stuName2 = new JList(stuName);
             stuName2.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            stuName2.setFixedCellHeight(50);
             
             stuName2.setCellRenderer(new DefaultListCellRenderer() {
                     @Override
@@ -301,7 +303,7 @@ public class TeachView extends JFrame {
             p.add(titleRow,BorderLayout.NORTH);
             p.add(bodyRow,BorderLayout.CENTER);
             
-            setSize(1400,900);
+            setSize(1300,600);
             setLocationRelativeTo(null); // center on screen
             setVisible(true);
             p.setVisible(true);

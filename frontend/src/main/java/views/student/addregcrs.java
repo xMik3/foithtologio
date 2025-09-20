@@ -157,7 +157,7 @@ public class addregcrs extends JFrame{
 
 
         cntrlp = new JPanel();
-         cntrlp.setLayout(new FlowLayout(FlowLayout.RIGHT));
+         cntrlp.setLayout(new FlowLayout(FlowLayout.CENTER));
          cntrlp.setMaximumSize(new Dimension(Integer.MAX_VALUE, 75));
          
          cnfrm = new JButton("Confirm");
@@ -221,7 +221,7 @@ public class addregcrs extends JFrame{
 
                         dispose();
                 } else {
-                        errorLabel.setBounds(300,350,600,50);
+                        errorLabel.setBounds(100,350,600,50);
                             try {
                                  ApiResponse registerResponse = gson.fromJson(response.errorBody().string(), ApiResponse.class);
                                  errorLabel.setText("*"+ registerResponse.getMessage());
