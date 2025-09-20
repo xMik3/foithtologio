@@ -6,7 +6,6 @@ public class Student {
     private String Name;
     private String Surname;
     private int Semester;
-    private int AvailableCourses;
     private int EnrollmentYear;
 
 
@@ -26,20 +25,15 @@ public class Student {
         return this.Semester;
     }
 
-    public int getAvailableCourses() {
-        return this.AvailableCourses;
-    }
-
     public int getEnrollmentYear() {
         return this.EnrollmentYear;
     }
 
-    public Student(String ID,String Name,String Surname,int Semester,int AvailableCourses,int EnrollmentYear) {
+    public Student(String ID,String Name,String Surname,int Semester,int EnrollmentYear) {
         this.ID=ID;
         this.Name=Name;
         this.Surname=Surname;
         this.Semester=Semester;
-        this.AvailableCourses=AvailableCourses;
         this.EnrollmentYear=EnrollmentYear;
     }
 

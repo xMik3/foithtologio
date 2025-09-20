@@ -251,7 +251,7 @@ public class EditStudent extends JPanel {
                                         "Success",             // dialog title
                                         JOptionPane.INFORMATION_MESSAGE // type
                                 );
-                                resStudent = new Student(student.getID(),requestName,requestSurname,student.getSemester(),student.getAvailableCourses(),student.getEnrollmentYear());
+                                resStudent = new Student(student.getID(),requestName,requestSurname,student.getSemester(),student.getEnrollmentYear());
                                 successful = true;
                                 ((JDialog) SwingUtilities.getWindowAncestor(EditStudent.this)).dispose();
                             } else {

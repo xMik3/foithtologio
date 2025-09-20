@@ -74,42 +74,47 @@ public class StudView extends JFrame{
             e.printStackTrace();
         }
         Color originalBackground = UIManager.getColor("Button.background");
-        errorLabel = new JLabel();
-        
-        crsesName = new DefaultListModel<>();    
+
+        errorLabel = new JLabel("");
+        errorLabel.setFont(new Font("Arial", Font.PLAIN, 25));
+        errorLabel.setForeground(Color.RED);
+
+
+        crsesName = new DefaultListModel<>();
         crsesName2 = new JList(crsesName);
         regcrses = new ArrayList<>();
         crsesName2.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        crsesName2.setFixedCellHeight(50);
         
         
         crsesName2.setCellRenderer(new DefaultListCellRenderer() {
-    @Override
-    public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                    JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
-        // Set font and text alignment
-        label.setFont(new Font("Arial", Font.PLAIN, 24));
-        label.setHorizontalAlignment(SwingConstants.CENTER);
+                    // Set font and text alignment
+                    label.setFont(new Font("Arial", Font.PLAIN, 24));
+                    label.setHorizontalAlignment(SwingConstants.CENTER);
 
-        // Set borders
-        Border lineBorder = BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(78, 80, 82));
-        Border leftBorder = BorderFactory.createEmptyBorder(0, 10, 0, 0);
-        label.setBorder(new CompoundBorder(lineBorder, leftBorder));
+                    // Set borders
+                    Border lineBorder = BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(78, 80, 82));
+                    Border leftBorder = BorderFactory.createEmptyBorder(0, 10, 0, 0);
+                    label.setBorder(new CompoundBorder(lineBorder, leftBorder));
 
-       
-        if (isSelected) {
-            label.setBackground(new Color(60, 60, 60));
-            
-        } else {
-            label.setBackground(new Color(80, 80, 80));
-            
-        }
 
-        label.setOpaque(true);  // important for background color
+                    if (isSelected) {
+                        label.setBackground(new Color(60, 60, 60));
 
-        return label;
-    }
-});
+                    } else {
+                        label.setBackground(new Color(80, 80, 80));
+
+                    }
+
+                    label.setOpaque(true);  // important for background color
+
+                    return label;
+            }
+        });
         
         
         
@@ -142,7 +147,7 @@ public class StudView extends JFrame{
         
         refreshp = new JPanel();
         refreshp.setLayout(new BorderLayout());
-        refreshp.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        refreshp.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
         title1 = new JLabel("Courses");
         title1.setFont(new Font("Arial", Font.PLAIN, 30));
@@ -180,29 +185,29 @@ public class StudView extends JFrame{
         titlepanel2.setPreferredSize(new Dimension(0, 10));
         titlepanel2.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         
-        cid = new JLabel("Course's ID:");
-        cid.setFont(new Font("Arial", Font.PLAIN, 20));
-        cid.setAlignmentX(Component.CENTER_ALIGNMENT);
+        cid = new JLabel();
+        cid.setFont(new Font("Arial", Font.PLAIN, 24));
+        cid.setAlignmentX(Component.LEFT_ALIGNMENT);
         
-        tname = new JLabel("Course instructed by:");
-        tname.setFont(new Font("Arial", Font.PLAIN, 20));
-        tname.setAlignmentX(Component.CENTER_ALIGNMENT);
+        tname = new JLabel();
+        tname.setFont(new Font("Arial", Font.PLAIN, 24));
+        tname.setAlignmentX(Component.LEFT_ALIGNMENT);
         
-        tsurname = new JLabel("tsur");
-        tsurname.setFont(new Font("Arial", Font.PLAIN, 20));
-        tsurname.setAlignmentX(Component.CENTER_ALIGNMENT);
+        tsurname = new JLabel();
+        tsurname.setFont(new Font("Arial", Font.PLAIN, 24));
+        tsurname.setAlignmentX(Component.LEFT_ALIGNMENT);
         
-        smstr = new JLabel("smstr");
-        smstr.setFont(new Font("Arial", Font.PLAIN, 20));
-        smstr.setAlignmentX(Component.CENTER_ALIGNMENT);
+        smstr = new JLabel();
+        smstr.setFont(new Font("Arial", Font.PLAIN, 24));
+        smstr.setAlignmentX(Component.LEFT_ALIGNMENT);
         
-        nm = new JLabel("nm");
-        nm.setFont(new Font("Arial", Font.PLAIN, 20));
-        nm.setAlignmentX(Component.CENTER_ALIGNMENT);
+        nm = new JLabel();
+        nm.setFont(new Font("Arial", Font.PLAIN, 34));
+        nm.setAlignmentX(Component.LEFT_ALIGNMENT);
         
-        grade = new JLabel("grade");
-        grade.setFont(new Font("Arial", Font.PLAIN, 20));
-        grade.setAlignmentX(Component.CENTER_ALIGNMENT);
+        grade = new JLabel();
+        grade.setFont(new Font("Arial", Font.PLAIN, 24));
+        grade.setAlignmentX(Component.LEFT_ALIGNMENT);
         
         JPanel controlPanel = new JPanel();
         controlPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
@@ -220,21 +225,15 @@ public class StudView extends JFrame{
             scrollPane.getViewport().setBackground(new Color(80, 80, 80));
             scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             
-            addcrs.addActionListener
-                (
-                    l -> 
-                    {
-                      if (curind != -1 && !isRefreshing) {  
-                      new addregcrs(this);
-                      }
-                    }
-                );
+            addcrs.addActionListener(l -> {
+                  if (curind != -1 && !isRefreshing) {
+                    new addregcrs(this);
+                  }
+                }
+            );
             
             
-            rmcrs.addActionListener
-                (
-                    l -> 
-                    {
+            rmcrs.addActionListener(l -> {
                         if (curind != -1 && !isRefreshing) {
                         
                             int curind2 = curind;
@@ -288,12 +287,18 @@ public class StudView extends JFrame{
                             return; // nothing selected, exit early
         }
                         RegisteredCourse course = regcrses.get(curind);
-                        nm.setText("Course's Name:" + course.getName());
-                        cid.setText("Course's ID:" + course.getID());
-                        smstr.setText("Course's Semester:" + course.getSemester());
-                        tname.setText("Course instructed by:" + course.getTeacherSurname() + course.getTeacherName());
-                        grade.setText("Grade:" + course.getGrade());
+                        nm.setText(course.getName());
+                        cid.setText("Course ID : " + course.getID());
+                        smstr.setText("Semester : " + course.getSemester());
+                        tname.setText("Instructed by : " + course.getTeacherSurname() + " " + course.getTeacherName());
+                        if(course.getGrade()==null){
+                            grade.setText("Ungraded");
+                        }
+                        else{
+                            grade.setText("Grade : " + course.getGrade());
+                        }
                         System.out.println(curind);
+
                     }}
                 );
             
@@ -309,11 +314,11 @@ public class StudView extends JFrame{
             infop.add(nm);
             infop.add(Box.createRigidArea(new Dimension(0, 20)));
             infop.add(cid);
-            infop.add(Box.createRigidArea(new Dimension(0, 20)));
+            infop.add(Box.createRigidArea(new Dimension(0, 10)));
             infop.add(smstr);
-            infop.add(Box.createRigidArea(new Dimension(0, 20)));
+            infop.add(Box.createRigidArea(new Dimension(0, 10)));
             infop.add(tname);
-            infop.add(Box.createRigidArea(new Dimension(0, 20)));
+            infop.add(Box.createRigidArea(new Dimension(0, 10)));
             infop.add(grade);
             
             refreshp.add(refresh,BorderLayout.CENTER);
@@ -340,9 +345,10 @@ public class StudView extends JFrame{
             panel.add(titleRow, BorderLayout.NORTH);
             panel.add(bodyRow, BorderLayout.CENTER);
 
-            panel.setVisible(true);
+
             setVisible(true);
-            setSize(1400,900);
+            setSize(1300,600);
+            setResizable(false);
             add(panel);
             
 }
@@ -374,8 +380,8 @@ public class StudView extends JFrame{
                 } else {
                         errorLabel.setBounds(500,550,600,50);
                             try {
-                                 ApiResponse loginResponse = gson.fromJson(response.errorBody().string(), ApiResponse.class);
-                                 errorLabel.setText("*"+ loginResponse.getMessage());
+                                 ApiResponse callResponse = gson.fromJson(response.errorBody().string(), ApiResponse.class);
+                                 errorLabel.setText("*"+ callResponse.getMessage());
                             } catch (IOException ex) {
                                  errorLabel.setText("*"+ex.getMessage());
                                     }
@@ -391,18 +397,7 @@ public class StudView extends JFrame{
                             }
 
                         });
-            
-            
-        }
-        
-        public void registerCourse(ArrayList<String> toreg){
-            SwingUtilities.invokeLater(() -> {
-            
-            for(String course:toreg){
-                crsesName.addElement(course);
-            }
-            
-            });
+
         }
         
 }

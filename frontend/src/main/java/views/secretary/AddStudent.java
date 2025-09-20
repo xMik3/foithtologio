@@ -256,7 +256,7 @@ public class AddStudent extends JPanel {
                                         "Success",             // dialog title
                                         JOptionPane.INFORMATION_MESSAGE // type
                                 );
-                                student = new Student(studentID,requestName,requestSurname,requestEnrollmentYear,7,requestEnrollmentYear);
+                                student = new Student(studentID,requestName,requestSurname,requestEnrollmentYear,requestEnrollmentYear);
                                 successful=true;
                                 ((JDialog) SwingUtilities.getWindowAncestor(AddStudent.this)).dispose();
                             } else {
