@@ -306,6 +306,7 @@ public class TeachView extends JFrame {
             setSize(1300,600);
             setLocationRelativeTo(null); // center on screen
             setVisible(true);
+            setResizable(false);
             p.setVisible(true);
             add(p);
             
@@ -321,10 +322,9 @@ public class TeachView extends JFrame {
                             return; 
         }
                         ManagedCourse course = crses.get(curind1);
-                        id.setText("Course's ID:" + course.getID());
-                        nm.setText("Course's Name:" + course.getName());
-                        smstr.setText("Course's Semester:" + course.getSemester());
-                        usurname.setVisible(false);
+                        id.setText("Course ID : " + course.getID());
+                        nm.setText("Course Name : " + course.getName());
+                        smstr.setText("Course Semester : " + course.getSemester());
                         System.out.println(curind1);
                         
                         String cid = course.getID();
@@ -345,7 +345,7 @@ public class TeachView extends JFrame {
                         String label = student.getID();
                         String name = student.getNAME();
                         String surname = student.getSURNAME();
-                        stuName.add(i,label + "-" + name); 
+                        stuName.add(i,name + " " + surname + " - " + label);
                         
             
             
@@ -390,12 +390,9 @@ public class TeachView extends JFrame {
                             return; 
         }
                         ManagedStudent student = stu.get(curind2);
-                        id.setText("Student's ID:" + student.getID());
-                        nm.setText("Student's Name:" + student.getNAME());
-                        smstr.setText("Course's Surname:" + student.getSURNAME());
-                        usurname.setText("Student's semester:" + student.getSURNAME());
-                        usurname.setVisible(true);
-                        System.out.println(curind2);
+                        id.setText("Student ID : " + student.getID());
+                        nm.setText("Student Name : " + student.getNAME());
+                        smstr.setText("Student Surname : " + student.getSURNAME());
                     }}
                 );
             
@@ -426,6 +423,7 @@ public class TeachView extends JFrame {
     }
           public void load(){
               isRefreshing = true;
+
             
             Call<GetManagedCoursesResponse> call = teacherInterface.getManagedCourses(ApiClient.getToken());
             
@@ -450,7 +448,7 @@ public class TeachView extends JFrame {
                         ManagedCourse course = crses.get(i);
                         String label = course.getID();
                         String name = course.getName();
-                        crsesName.add(i,label + "-" + name); 
+                        crsesName.add(i,name + " - " + label);
                         
             
         }

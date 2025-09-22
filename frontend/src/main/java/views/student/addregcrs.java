@@ -195,7 +195,9 @@ public class addregcrs extends JFrame{
          setResizable(false);
 
          cnfrm.addActionListener(l -> {
-               int[] indexes = crsesName2.getSelectedIndices();
+             toreg.clear();
+
+             int[] indexes = crsesName2.getSelectedIndices();
                for(int index:indexes){
                    AvailableCourse course = allAvailCrses.get(index);
                    String label = course.getID();

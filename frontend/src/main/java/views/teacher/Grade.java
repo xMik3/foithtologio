@@ -196,6 +196,7 @@ public class Grade extends JFrame{
          add(p);
          setVisible(true);
          setSize(700,300);
+         setResizable(false);
         
     }
     

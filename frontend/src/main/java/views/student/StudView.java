@@ -373,7 +373,7 @@ public class StudView extends JFrame{
                         RegisteredCourse course = regcrses.get(i);
                         String label = course.getID();
                         String name = course.getName();
-                        crsesName.add(i,label + "-" + name); 
+                        crsesName.add(i,name + " - " + label);
                 }
                         isRefreshing = false;
 

@@ -40,11 +40,12 @@ public class Login extends JFrame{
             UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarkLaf");
             UIManager.put("TextComponent.arc", 25);
             UIManager.put( "Button.arc", 999 );
+            JFrame.setDefaultLookAndFeelDecorated(false);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        JLabel icon = new JLabel(new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/temporaryIcon.png"))));
+        JLabel icon = new JLabel(new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/icon.png"))));
         String[] options = {"Student","Teacher","Secretary"};
         typeSelection = new JComboBox(options);
         typeSelection.setFont(new Font("Arial", Font.PLAIN, 25));
@@ -103,6 +104,9 @@ public class Login extends JFrame{
 
                             JFrame secretaryWindow = new SecretaryView("Secretary");
 
+                            ImageIcon logoIcon = new ImageIcon(getClass().getResource("/images/icon.png"));
+                            secretaryWindow.setIconImage(logoIcon.getImage().getScaledInstance(50,50, Image.SCALE_SMOOTH));
+
                             secretaryWindow.setLocationRelativeTo(null);
                             secretaryWindow.setVisible(true);
 
@@ -110,7 +114,10 @@ public class Login extends JFrame{
                         } else if (userType.equals("Student"))
                         {
                             JFrame studentWindow = new StudView("Student");
-                            
+
+                            ImageIcon logoIcon = new ImageIcon(getClass().getResource("/images/icon.png"));
+                            studentWindow.setIconImage(logoIcon.getImage().getScaledInstance(50,50, Image.SCALE_SMOOTH));
+
                             studentWindow.setLocationRelativeTo(null);
                             studentWindow.setVisible(true);
 
@@ -118,7 +125,10 @@ public class Login extends JFrame{
                         } else if (userType.equals("Teacher"))
                         {
                             JFrame teacherWindow = new TeachView("Teacher");
-                            
+
+                            ImageIcon logoIcon = new ImageIcon(getClass().getResource("/images/icon.png"));
+                            teacherWindow.setIconImage(logoIcon.getImage().getScaledInstance(50,50, Image.SCALE_SMOOTH));
+
                             teacherWindow.setLocationRelativeTo(null);
                             teacherWindow.setVisible(true);
 
@@ -211,12 +221,6 @@ public class Login extends JFrame{
             errorLabel.setText("");
             return false;
         }
-
-    }
-
-
-    public static void main(String[] args) {
-        new Login("Login");
 
     }
 
